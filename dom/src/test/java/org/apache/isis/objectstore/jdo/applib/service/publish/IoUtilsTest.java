@@ -14,33 +14,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.isisaddons.module.publishing.fixture.dom;
+package org.apache.isis.objectstore.jdo.applib.service.publish;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
-public class SimpleObjectTest_name {
+public class IoUtilsTest {
 
-    private SomePublishedObject somePublishedObject;
-
-    @Before
-    public void setUp() throws Exception {
-        somePublishedObject = new SomePublishedObject();
-    }
-    
     @Test
-    public void happyCase() throws Exception {
-        // given
-        assertThat(somePublishedObject.getName(), is(nullValue()));
+    public void roundtrip() {
+        final String str = "3784y5hrfbdgkjh3qyri f£$%$YTRGFDGER$£\"Eu098987u'!\"£%^&*IO(LUKJM)";
+        final byte[] utf8ZippedBytes = IoUtils.toUtf8ZippedBytes("serializedForm", str);
         
-        // when
-        somePublishedObject.setName("Foobar");
+        final String str2 = IoUtils.fromUtf8ZippedBytes("serializedForm", utf8ZippedBytes);
         
-        // then
-        assertThat(somePublishedObject.getName(), is("Foobar"));
+        assertThat(str, (is(str2)));
     }
-    
+
 }

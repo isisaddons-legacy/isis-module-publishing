@@ -22,11 +22,11 @@ package org.isisaddons.module.publishing.fixture.scripts;
 import org.apache.isis.applib.fixturescripts.FixtureScript;
 import org.apache.isis.objectstore.jdo.applib.service.support.IsisJdoSupport;
 
-public class SimpleObjectsTearDownFixture extends FixtureScript {
+public class SomePublishedObjectsTearDownFixture extends FixtureScript {
 
     @Override
     protected void execute(ExecutionContext executionContext) {
-        isisJdoSupport.executeUpdate("delete from \"SimpleObject\"");
+        isisJdoSupport.executeUpdate("delete from \"SomePublishedObject\"");
     }
 
 

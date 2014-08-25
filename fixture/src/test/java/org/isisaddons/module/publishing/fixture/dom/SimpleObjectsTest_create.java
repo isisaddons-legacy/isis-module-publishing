@@ -18,9 +18,7 @@ package org.isisaddons.module.publishing.fixture.dom;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import org.isisaddons.module.publishing.fixture.dom.SimpleObject;
 
-import org.isisaddons.module.publishing.fixture.dom.SimpleObjects;
 import org.jmock.Expectations;
 import org.jmock.Sequence;
 import org.jmock.auto.Mock;
@@ -40,37 +38,37 @@ public class SimpleObjectsTest_create {
     @Mock
     private DomainObjectContainer mockContainer;
     
-    private SimpleObjects simpleObjects;
+    private SomePublishedObjects somePublishedObjects;
 
     @Before
     public void setUp() throws Exception {
-        simpleObjects = new SimpleObjects();
-        simpleObjects.container = mockContainer;
+        somePublishedObjects = new SomePublishedObjects();
+        somePublishedObjects.container = mockContainer;
     }
     
     @Test
     public void happyCase() throws Exception {
         
         // given
-        final SimpleObject simpleObject = new SimpleObject();
+        final SomePublishedObject somePublishedObject = new SomePublishedObject();
         
         final Sequence seq = context.sequence("create");
         context.checking(new Expectations() {
             {
-                oneOf(mockContainer).newTransientInstance(SimpleObject.class);
+                oneOf(mockContainer).newTransientInstance(SomePublishedObject.class);
                 inSequence(seq);
-                will(returnValue(simpleObject));
+                will(returnValue(somePublishedObject));
                 
-                oneOf(mockContainer).persistIfNotAlready(simpleObject);
+                oneOf(mockContainer).persistIfNotAlready(somePublishedObject);
                 inSequence(seq);
             }
         });
         
         // when
-        final SimpleObject obj = simpleObjects.create("Foobar");
+        final SomePublishedObject obj = somePublishedObjects.create("Foobar");
         
         // then
-        assertThat(obj, is(simpleObject));
+        assertThat(obj, is(somePublishedObject));
         assertThat(obj.getName(), is("Foobar"));
     }
 
