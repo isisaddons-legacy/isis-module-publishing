@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.isis.objectstore.jdo.applib.service.publish;
+package org.isisaddons.module.publishing.dom;
 
 import java.io.Serializable;
 import java.util.StringTokenizer;

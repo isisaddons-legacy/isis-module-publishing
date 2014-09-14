@@ -14,11 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.isis.objectstore.jdo.applib.service.publish;
+package org.isisaddons.module.publishing.dom;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import org.isisaddons.module.publishing.dom.IoUtils;
 import org.junit.Test;
 
 public class IoUtilsTest {

@@ -17,7 +17,7 @@
  *  under the License.
  */
 
-package org.apache.isis.objectstore.jdo.applib.service.publish;
+package org.isisaddons.module.publishing.dom;
 
 import java.util.UUID;
 import javax.jdo.annotations.IdentityType;

@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.isis.objectstore.jdo.applib.service.publish;
+package org.isisaddons.module.publishing.dom;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,7 +26,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.isis.applib.FatalException;
-import org.apache.isis.applib.RecoverableException;
 import org.apache.isis.applib.NonRecoverableException;
 
 class IoUtils {
