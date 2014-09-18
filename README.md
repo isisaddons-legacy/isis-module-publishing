@@ -68,13 +68,9 @@ In addition, the `ReferencedAddress` entity is also a published object:
     public class ReferencedAddress ... { ... }
 
 This means that as well as raising and persisting the action invocation event, a separate event is raised and persisted
- for the change to the `ReferencedAddress`:
+ for the change to the `ReferencedAddress`, the JSON representation of which includes a URL back to the changed address object: 
  
 ![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/060-address-object-changed-event.png)
-
-... the JSON representation of which includes a URL back to the changed address object: 
-
-![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/070-change-customer-object.png)
 
 Note that both the published events (for the action invocation on customer and the change of address) are associated by
 the same transaction Id (a GUID).  This GUID can also be used to associate the event back to any persisted commands (as
@@ -87,10 +83,6 @@ Changes to the customer are also published:
 
     @PublishedObject(value = PublishedCustomer.ObjectChangedEventPayloadFactory.class)
     public class PublishedCustomer ... { ... }
-
-Changing the customer's name causes an event to persisted:
-
-![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/080-customer-changed-object-event-created.png)
 
 In this case a custom payload factory is specified:
 
@@ -116,9 +108,19 @@ In this case a custom payload factory is specified:
         }
     }
 
-This custom payload exposes additional related information: the customer's name (a simple scalar), the customer's 
-address' town (traversing a reference), and the orders of the customers (traversing a collection).  This additional
-information is captured in the serialized form of the event:
+The custom payload exposes additional related information: the customer's name (a simple scalar), the customer's 
+address' town (traversing a reference), and the orders of the customers (traversing a collection).  
+
+
+So, changing the customer's name:
+
+![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/070-change-customer-object.png)
+
+... causes an event to persisted:
+
+![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/080-customer-changed-object-event-created.png)
+
+The additional information of the custom payload is captured in the serialized form of the event:
 
 ![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/090-customer-changed-event-details.png)
 
