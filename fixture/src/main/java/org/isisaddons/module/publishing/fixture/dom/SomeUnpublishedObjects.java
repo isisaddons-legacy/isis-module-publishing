@@ -23,41 +23,40 @@ import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.annotation.ActionSemantics.Of;
 
-@DomainService(menuOrder = "10", repositoryFor = SomePublishedObject.class)
-public class SomePublishedObjects {
+@Hidden
+@DomainService(menuOrder = "10", repositoryFor = SomeUnpublishedObject.class)
+public class SomeUnpublishedObjects {
 
     //region > identification in the UI
-    // //////////////////////////////////////
 
     public String getId() {
-        return "simple";
+        return "SomeUnpublishedObject";
     }
 
     public String iconName() {
-        return "SimpleObject";
+        return "SomeUnpublishedObject";
     }
 
     //endregion
 
     //region > listAll (action)
-    // //////////////////////////////////////
 
+    @Hidden
     @Bookmarkable
     @ActionSemantics(Of.SAFE)
     @MemberOrder(sequence = "1")
-    public List<SomePublishedObject> listAll() {
-        return container.allInstances(SomePublishedObject.class);
+    public List<SomeUnpublishedObject> listAll() {
+        return container.allInstances(SomeUnpublishedObject.class);
     }
 
     //endregion
 
     //region > create (action)
-    // //////////////////////////////////////
-    
+
     @MemberOrder(sequence = "2")
-    public SomePublishedObject create(
+    public SomeUnpublishedObject create(
             final @Named("Name") String name) {
-        final SomePublishedObject obj = container.newTransientInstance(SomePublishedObject.class);
+        final SomeUnpublishedObject obj = container.newTransientInstance(SomeUnpublishedObject.class);
         obj.setName(name);
         container.persistIfNotAlready(obj);
         return obj;
@@ -66,7 +65,6 @@ public class SomePublishedObjects {
     //endregion
 
     //region > injected services
-    // //////////////////////////////////////
 
     @javax.inject.Inject 
     DomainObjectContainer container;

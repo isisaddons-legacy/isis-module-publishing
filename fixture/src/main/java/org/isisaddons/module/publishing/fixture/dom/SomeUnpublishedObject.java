@@ -21,10 +21,7 @@ package org.isisaddons.module.publishing.fixture.dom;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.VersionStrategy;
 import org.apache.isis.applib.DomainObjectContainer;
-import org.apache.isis.applib.annotation.Bookmarkable;
-import org.apache.isis.applib.annotation.MemberOrder;
-import org.apache.isis.applib.annotation.ObjectType;
-import org.apache.isis.applib.annotation.Title;
+import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.util.ObjectContracts;
 
 @javax.jdo.annotations.PersistenceCapable(identityType=IdentityType.DATASTORE)
@@ -34,13 +31,13 @@ import org.apache.isis.applib.util.ObjectContracts;
 @javax.jdo.annotations.Version(
         strategy=VersionStrategy.VERSION_NUMBER, 
         column="version")
-@ObjectType("SOME_PUBLISHED_OBJECT")
+@ObjectType("UNPUBLISHED")
+@PublishedObject
 @Bookmarkable
-public class SomePublishedObject implements Comparable<SomePublishedObject> {
+public class SomeUnpublishedObject implements Comparable<SomeUnpublishedObject> {
 
     //region > name (property)
-    // //////////////////////////////////////
-    
+
     private String name;
 
     @javax.jdo.annotations.Column(allowsNull="false")
@@ -58,17 +55,15 @@ public class SomePublishedObject implements Comparable<SomePublishedObject> {
 
 
     //region > compareTo
-    // //////////////////////////////////////
 
     @Override
-    public int compareTo(SomePublishedObject other) {
+    public int compareTo(SomeUnpublishedObject other) {
         return ObjectContracts.compare(this, other, "name");
     }
 
     //endregion
 
     //region > injected services
-    // //////////////////////////////////////
 
     @javax.inject.Inject
     @SuppressWarnings("unused")

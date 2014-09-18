@@ -16,22 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.isisaddons.module.publishing.integtests;
 
-import org.junit.BeforeClass;
+package org.isisaddons.module.publishing.fixture.scripts;
 
-import org.apache.isis.core.integtestsupport.IntegrationTestAbstract;
-import org.apache.isis.core.integtestsupport.scenarios.ScenarioExecutionForIntegration;
+import org.apache.isis.applib.fixturescripts.FixtureScript;
+import org.apache.isis.objectstore.jdo.applib.service.support.IsisJdoSupport;
 
-public abstract class CommandModuleIntegTest extends IntegrationTestAbstract {
+public class PublishingEventSerializerModuleAppTearDownFixture extends FixtureScript {
 
-    @BeforeClass
-    public static void initClass() {
-        org.apache.log4j.PropertyConfigurator.configure("logging.properties");
-        CommandModuleSystemInitializer.initIsft();
-        
-        // instantiating will install onto ThreadLocal
-        new ScenarioExecutionForIntegration();
+    @Override
+    protected void execute(ExecutionContext executionContext) {
+        isisJdoSupport.executeUpdate("delete from \"IsisPublishedEvent\"");
+        isisJdoSupport.executeUpdate("delete from \"ReferencedOrder\"");
+        isisJdoSupport.executeUpdate("delete from \"ReferencedAddress\"");
+        isisJdoSupport.executeUpdate("delete from \"PublishedCustomer\"");
+        isisJdoSupport.executeUpdate("delete from \"SomeUnpublishedObject\"");
     }
+
+
+    @javax.inject.Inject
+    private IsisJdoSupport isisJdoSupport;
 
 }

@@ -25,8 +25,8 @@ language governing permissions and limitations under the License.
 
     <name>Isis Addons Publishing Module DOM</name>
     <description>
-        A module providing publishing persistence, enabling profiling, background execution and
-        extended auditing capabilities.
+        A module providing the persistence of published events, enabling integration between
+        systems / bounded contexts.
     </description>
 
     <url>https://github.com/isisaddons/isis-module-publishing</url>
@@ -57,6 +57,8 @@ language governing permissions and limitations under the License.
         <isis.version>1.6.0</isis.version>
 
         <datanucleus-maven-plugin.version>3.3.2</datanucleus-maven-plugin.version>
+
+        <slf4j.version>1.7.6</slf4j.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -231,6 +233,26 @@ language governing permissions and limitations under the License.
             <version>${isis.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.isis.core</groupId>
+             <artifactId>isis-core-unittestsupport</artifactId>
+            <version>${isis.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.isis.core</groupId>
+            <artifactId>isis-core-viewer-restfulobjects-rendering</artifactId>
+            <version>${isis.version}</version>
+            <!-- optional so that don't bring in dependency if not using the RestfulObjectsSpecEventSerializer -->
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
 
     <!-- http://central.sonatype.org/pages/apache-maven.html -->

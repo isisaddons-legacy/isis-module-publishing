@@ -149,7 +149,14 @@ language governing permissions and limitations under the License.
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
+
+        <!-- required to use the RestfulObjectsSpecEventSerializer -->
+        <dependency>
+            <groupId>org.apache.isis.core</groupId>
+            <artifactId>isis-core-viewer-restfulobjects-rendering</artifactId>
+        </dependency>
+
         <!-- other isis components -->
         <dependency>
             <groupId>org.apache.isis.core</groupId>
@@ -188,11 +195,6 @@ language governing permissions and limitations under the License.
         </dependency>
 
 
-        <!-- isis modules -->
-        <dependency>
-            <groupId>org.apache.isis.module</groupId>
-            <artifactId>isis-module-devutils-impl</artifactId>
-        </dependency>
 
         <!-- to run using WebServer (optional) -->
         <dependency>

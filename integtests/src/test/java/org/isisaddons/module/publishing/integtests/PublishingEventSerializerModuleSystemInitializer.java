@@ -25,9 +25,9 @@ import org.apache.isis.objectstore.jdo.datanucleus.IsisConfigurationForJdoIntegT
  * Holds an instance of an {@link IsisSystemForTest} as a {@link ThreadLocal} on the current thread,
  * initialized with ToDo app's domain services. 
  */
-public class CommandModuleSystemInitializer {
+public class PublishingEventSerializerModuleSystemInitializer {
     
-    private CommandModuleSystemInitializer(){}
+    private PublishingEventSerializerModuleSystemInitializer(){}
 
     public static IsisSystemForTest initIsft() {
         IsisSystemForTest isft = IsisSystemForTest.getElseNull();
@@ -46,7 +46,7 @@ public class CommandModuleSystemInitializer {
             with(new DataNucleusPersistenceMechanismInstaller());
 
             // services annotated with @DomainService
-            withServicesIn( "org.isisaddons.module.publishing"
+            withServicesIn( "org.isisaddons.module.publishingeventserializer"
                             ,"org.apache.isis.core.wrapper"
                             ,"org.apache.isis.applib"
                             ,"org.apache.isis.core.metamodel.services"

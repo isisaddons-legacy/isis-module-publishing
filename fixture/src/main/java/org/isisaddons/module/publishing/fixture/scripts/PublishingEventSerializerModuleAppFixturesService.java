@@ -32,16 +32,11 @@ import org.apache.isis.applib.fixturescripts.SimpleFixtureScript;
  * Enables fixtures to be installed from the application.
  */
 @Named("Prototyping")
-@DomainService(menuOrder = "20")
-public class SomePublishedObjectsFixturesService extends FixtureScripts {
+@DomainService(menuOrder = "90")
+public class PublishingEventSerializerModuleAppFixturesService extends FixtureScripts {
 
-    public SomePublishedObjectsFixturesService() {
+    public PublishingEventSerializerModuleAppFixturesService() {
         super("org.isisaddons.module.publishing.fixture.scripts");
-    }
-
-    @Override // compatibility with core 1.5.0
-    public FixtureScript default0RunFixtureScript() {
-        return findFixtureScriptFor(SimpleFixtureScript.class);
     }
 
     /**
@@ -53,13 +48,18 @@ public class SomePublishedObjectsFixturesService extends FixtureScripts {
         return super.choices0RunFixtureScript();
     }
 
+    @Override
+    public FixtureScript default0RunFixtureScript() {
+        return findFixtureScriptFor(SimpleFixtureScript.class);
+    }
+
 
     // //////////////////////////////////////
 
     @Prototype
     @MemberOrder(sequence="20")
     public Object installFixturesAndReturnFirst() {
-        final List<FixtureResult> run = findFixtureScriptFor(SomePublishedObjectsFixture.class).run(null);
+        final List<FixtureResult> run = findFixtureScriptFor(PublishingEventSerializerModuleAppSetUpFixture.class).run(null);
         return run.get(0).getObject();
     }
 

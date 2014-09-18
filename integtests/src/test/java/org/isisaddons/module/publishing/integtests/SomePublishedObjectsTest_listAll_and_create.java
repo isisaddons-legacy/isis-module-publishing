@@ -18,36 +18,35 @@
  */
 package org.isisaddons.module.publishing.integtests;
 
-import org.isisaddons.module.publishing.fixture.dom.SomePublishedObject;
-import org.isisaddons.module.publishing.fixture.dom.SomePublishedObjects;
-import org.isisaddons.module.publishing.fixture.scripts.SomePublishedObjectsFixture;
-
 import java.util.List;
 import javax.inject.Inject;
+import org.isisaddons.module.publishing.fixture.dom.PublishedCustomer;
+import org.isisaddons.module.publishing.fixture.dom.PublishedCustomers;
+import org.isisaddons.module.publishing.fixture.scripts.PublishingEventSerializerModuleAppSetUpFixture;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SimpleObjectsTest_listAll_and_create extends CommandModuleIntegTest {
+public class SomePublishedObjectsTest_listAll_and_create extends PublishingEventSerializerModuleIntegTest {
 
     @Before
     public void setUpData() throws Exception {
-        scenarioExecution().install(new SomePublishedObjectsFixture());
+        scenarioExecution().install(new PublishingEventSerializerModuleAppSetUpFixture());
     }
 
     @Inject
-    private SomePublishedObjects somePublishedObjects;
+    private PublishedCustomers somePublishedObjects;
 
     @Test
     public void listAll() throws Exception {
 
-        final List<SomePublishedObject> all = wrap(somePublishedObjects).listAll();
+        final List<PublishedCustomer> all = wrap(somePublishedObjects).listAll();
         assertThat(all.size(), is(3));
         
-        SomePublishedObject somePublishedObject = wrap(all.get(0));
-        assertThat(somePublishedObject.getName(), is("Foo"));
+        PublishedCustomer simpleObject = wrap(all.get(0));
+        assertThat(simpleObject.getName(), is("Foo"));
     }
     
     @Test
@@ -55,7 +54,7 @@ public class SimpleObjectsTest_listAll_and_create extends CommandModuleIntegTest
 
         wrap(somePublishedObjects).create("Faz");
         
-        final List<SomePublishedObject> all = wrap(somePublishedObjects).listAll();
+        final List<PublishedCustomer> all = wrap(somePublishedObjects).listAll();
         assertThat(all.size(), is(4));
     }
 

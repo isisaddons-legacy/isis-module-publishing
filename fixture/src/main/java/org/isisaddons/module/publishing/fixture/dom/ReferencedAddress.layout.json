@@ -14,33 +14,42 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.isisaddons.module.publishing.fixture.dom;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Before;
-import org.junit.Test;
-
-public class SimpleObjectTest_name {
-
-    private SomePublishedObject somePublishedObject;
-
-    @Before
-    public void setUp() throws Exception {
-        somePublishedObject = new SomePublishedObject();
+{
+  "columns": [
+    {
+      "span": 4,
+      "memberGroups": {
+        "General": {
+          "members": {
+            "line1": {
+            },
+            "line2": {
+            },
+            "town": {
+            }
+          }
+        }
+      }
+    },
+    {
+      "span": 0,
+      "memberGroups": {}
+    },
+    {
+      "span": 0,
+      "memberGroups": {}
+    },
+    {
+      "span": 8,
+      "collections": {
+        "publishedEvents": {
+          "render": {
+            "value": "EAGERLY"
+          }
+        }
+      }
     }
-    
-    @Test
-    public void happyCase() throws Exception {
-        // given
-        assertThat(somePublishedObject.getName(), is(nullValue()));
-        
-        // when
-        somePublishedObject.setName("Foobar");
-        
-        // then
-        assertThat(somePublishedObject.getName(), is("Foobar"));
-    }
-    
+  ],
+  "actions": {}
 }
+ 
