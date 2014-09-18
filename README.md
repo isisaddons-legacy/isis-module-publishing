@@ -185,6 +185,7 @@ To use "out-of-the-box":
                     org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer,\
                     org.isisaddons.module.publishing.dom.PublishingServiceContributions,\
                     ...
+</pre>
                     
 The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  The  
 `PublishingServiceContributions` service is optional but recommended; see below for more information.
