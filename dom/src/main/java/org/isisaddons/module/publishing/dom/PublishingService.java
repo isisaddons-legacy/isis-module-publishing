@@ -28,14 +28,13 @@ import org.apache.isis.applib.services.command.CommandContext;
 import org.apache.isis.applib.services.publish.EventMetadata;
 import org.apache.isis.applib.services.publish.EventPayload;
 import org.apache.isis.applib.services.publish.EventSerializer;
-import org.apache.isis.applib.services.publish.PublishingService;
 
 /**
- * An implementation of {@link PublishingService} that persists events as
+ * An implementation of {@link org.apache.isis.applib.services.publish.PublishingService} that persists events as
  * entities into a JDO-backed database.
  */
 @DomainService
-public class PublishingServiceJdo extends AbstractService implements PublishingService {
+public class PublishingService extends AbstractService implements org.apache.isis.applib.services.publish.PublishingService {
 
     private static final String SERIALIZED_FORM_LOCAL_KEY = "datanucleus.PublishingService.serializedForm";
     private final static String SERIALIZED_FORM_KEY = "isis.persistor." + SERIALIZED_FORM_LOCAL_KEY;
@@ -75,7 +74,7 @@ public class PublishingServiceJdo extends AbstractService implements PublishingS
     @Programmatic
     public void publish(final EventMetadata metadata, final EventPayload payload) {
         final String serializedEvent = eventSerializer.serialize(metadata, payload).toString();
-        final PublishedEventJdo publishedEvent = newTransientInstance(PublishedEventJdo.class);
+        final PublishedEvent publishedEvent = newTransientInstance(PublishedEvent.class);
 
         if(this.serializedForm == SerializedForm.ZIPPED) {
             final byte[] zippedBytes = asZippedBytes(serializedEvent);

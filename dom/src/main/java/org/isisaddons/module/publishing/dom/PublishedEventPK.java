@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
-public class PublishedEventJdoPK implements Serializable {
+public class PublishedEventPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,10 +34,10 @@ public class PublishedEventJdoPK implements Serializable {
     // //////////////////////////////////////
 
     
-    public PublishedEventJdoPK() {
+    public PublishedEventPK() {
     }
     
-    public PublishedEventJdoPK(final String value) {
+    public PublishedEventPK(final String value) {
         final StringTokenizer token = new StringTokenizer (value, SEPARATOR);
         this.transactionId = UUID.fromString(token.nextToken());
         this.sequence = Integer.parseInt(token.nextToken());
@@ -81,7 +81,7 @@ public class PublishedEventJdoPK implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        PublishedEventJdoPK other = (PublishedEventJdoPK) obj;
+        PublishedEventPK other = (PublishedEventPK) obj;
         if (sequence != other.sequence)
             return false;
         if (transactionId == null) {

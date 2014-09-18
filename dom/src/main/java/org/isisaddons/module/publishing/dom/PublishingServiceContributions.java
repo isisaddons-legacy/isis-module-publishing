@@ -29,19 +29,19 @@ import org.apache.isis.applib.annotation.NotInServiceMenu;
 import org.apache.isis.applib.services.HasTransactionId;
 
 
-public class PublishingServiceJdoContributions extends AbstractFactoryAndRepository {
+public class PublishingServiceContributions extends AbstractFactoryAndRepository {
 
     @ActionSemantics(Of.SAFE)
     @NotInServiceMenu
     @NotContributed(As.ACTION)
     @Render(Type.EAGERLY)
-    public List<PublishedEventJdo> publishedEvents(final HasTransactionId hasTransactionId) {
+    public List<PublishedEvent> publishedEvents(final HasTransactionId hasTransactionId) {
         return publishedEventRepository.findByTransactionId(hasTransactionId.getTransactionId());
     }
     
     // //////////////////////////////////////
 
     @javax.inject.Inject
-    private PublishingServiceJdoRepository publishedEventRepository;
+    private PublishingServiceRepository publishedEventRepository;
 
 }

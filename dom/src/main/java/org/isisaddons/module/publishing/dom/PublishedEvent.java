@@ -37,23 +37,23 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
 @javax.jdo.annotations.PersistenceCapable(
         identityType=IdentityType.APPLICATION,
         table="IsisPublishedEvent", 
-        objectIdClass=PublishedEventJdoPK.class)
+        objectIdClass=PublishedEventPK.class)
 @javax.jdo.annotations.Queries( {
     @javax.jdo.annotations.Query(
             name="findByStateOrderByTimestamp", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE state == :state "
                     + "ORDER BY timestamp"),
     @javax.jdo.annotations.Query(
             name="findByTransactionId", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE transactionId == :transactionId"),
     @javax.jdo.annotations.Query(
             name="findByTargetAndTimestampBetween", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE targetStr == :targetStr " 
                     + "&& timestamp >= :from " 
                     + "&& timestamp <= :to "
@@ -61,46 +61,46 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
     @javax.jdo.annotations.Query(
             name="findByTargetAndTimestampAfter", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE targetStr == :targetStr " 
                     + "&& timestamp >= :from "
                     + "ORDER BY timestamp DESC"),
     @javax.jdo.annotations.Query(
             name="findByTargetAndTimestampBefore", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE targetStr == :targetStr " 
                     + "&& timestamp <= :to "
                     + "ORDER BY timestamp DESC"),
     @javax.jdo.annotations.Query(
             name="findByTarget", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE targetStr == :targetStr " 
                     + "ORDER BY timestamp DESC"),
     @javax.jdo.annotations.Query(
             name="findByTimestampBetween", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE timestamp >= :from " 
                     + "&&    timestamp <= :to "
                     + "ORDER BY timestamp DESC"),
     @javax.jdo.annotations.Query(
             name="findByTimestampAfter", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE timestamp >= :from "
                     + "ORDER BY timestamp DESC"),
     @javax.jdo.annotations.Query(
             name="findByTimestampBefore", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "WHERE timestamp <= :to "
                     + "ORDER BY timestamp DESC"),
     @javax.jdo.annotations.Query(
             name="find", language="JDOQL",  
             value="SELECT "
-                    + "FROM org.apache.isis.objectstore.jdo.applib.service.publish.PublishedEventJdo "
+                    + "FROM org.isisaddons.module.publishing.dom.PublishedEvent "
                     + "ORDER BY timestamp DESC")
 })
 @MemberGroupLayout(
@@ -110,7 +110,7 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
 @Immutable
 @Named("Published Event")
 @ObjectType("IsisPublishedEvent")
-public class PublishedEventJdo extends DomainChangeJdoAbstract implements HasTransactionId {
+public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransactionId {
 
     public static enum State {
         QUEUED, PROCESSED
@@ -118,7 +118,7 @@ public class PublishedEventJdo extends DomainChangeJdoAbstract implements HasTra
 
     // //////////////////////////////////////
 
-    public PublishedEventJdo() {
+    public PublishedEvent() {
         super(ChangeType.PUBLISHED_EVENT);
     }
 
@@ -379,7 +379,7 @@ public class PublishedEventJdo extends DomainChangeJdoAbstract implements HasTra
     public void setState(final State state) {
         this.state = state;
     }
-    private PublishedEventJdo setStateAndReturn(State state) {
+    private PublishedEvent setStateAndReturn(State state) {
         setState(state);
         return this;
     }
@@ -398,7 +398,7 @@ public class PublishedEventJdo extends DomainChangeJdoAbstract implements HasTra
     public String getSerializedForm() {
         byte[] zipped = getSerializedFormZipped();
         if(zipped != null) {
-            return PublishingServiceJdo.fromZippedBytes(zipped);
+            return PublishingService.fromZippedBytes(zipped);
         } else {
             return getSerializedFormClob();
         }
@@ -447,7 +447,7 @@ public class PublishedEventJdo extends DomainChangeJdoAbstract implements HasTra
     @Bulk
     @ActionSemantics(Of.IDEMPOTENT)
     @MemberOrder( name="State", sequence="10")
-    public PublishedEventJdo processed() {
+    public PublishedEvent processed() {
         return setStateAndReturn(State.PROCESSED);
     }
 
@@ -455,7 +455,7 @@ public class PublishedEventJdo extends DomainChangeJdoAbstract implements HasTra
     @Bulk
     @ActionSemantics(Of.IDEMPOTENT)
     @MemberOrder(name="State", sequence="11")
-    public PublishedEventJdo reQueue() {
+    public PublishedEvent reQueue() {
         return setStateAndReturn(State.QUEUED);
     }
 

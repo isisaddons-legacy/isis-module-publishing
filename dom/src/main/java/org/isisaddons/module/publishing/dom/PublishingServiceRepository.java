@@ -32,7 +32,7 @@ import org.apache.isis.applib.services.bookmark.Bookmark;
 
 /**
  * Provides supporting functionality for querying and persisting
- * {@link PublishedEventJdo published event} entities.
+ * {@link PublishedEvent published event} entities.
  *
  * <p>
  * This supporting service with no UI and no side-effects, and is there are no other implementations of the service,
@@ -40,28 +40,28 @@ import org.apache.isis.applib.services.bookmark.Bookmark;
  * need to explicitly register it as a service (eg in <tt>isis.properties</tt>).
  */
 @DomainService
-public class PublishingServiceJdoRepository extends AbstractFactoryAndRepository {
+public class PublishingServiceRepository extends AbstractFactoryAndRepository {
 
     @Programmatic
-    public List<PublishedEventJdo> findQueued() {
+    public List<PublishedEvent> findQueued() {
         return allMatches(
-                new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByStateOrderByTimestamp", 
-                        "state", PublishedEventJdo.State.QUEUED));
+                        "state", PublishedEvent.State.QUEUED));
     }
 
     @Programmatic
-    public List<PublishedEventJdo> findProcessed() {
+    public List<PublishedEvent> findProcessed() {
         return allMatches(
-                new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByStateOrderByTimestamp", 
-                        "state", PublishedEventJdo.State.PROCESSED));
+                        "state", PublishedEvent.State.PROCESSED));
     }
 
     @Programmatic
-    public List<PublishedEventJdo> findByTransactionId(final UUID transactionId) {
+    public List<PublishedEvent> findByTransactionId(final UUID transactionId) {
         return allMatches(
-                new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTransactionId", 
                         "transactionId", transactionId));
     }
@@ -70,15 +70,15 @@ public class PublishingServiceJdoRepository extends AbstractFactoryAndRepository
     public void purgeProcessed() {
         // REVIEW: this is not particularly performant.
         // much better would be to go direct to the JDO API.
-        List<PublishedEventJdo> processedEvents = findProcessed();
-        for (PublishedEventJdo publishedEvent : processedEvents) {
+        List<PublishedEvent> processedEvents = findProcessed();
+        for (PublishedEvent publishedEvent : processedEvents) {
             publishedEvent.delete();
         }
     }
 
 
     @Programmatic
-    public List<PublishedEventJdo> findByTargetAndFromAndTo(
+    public List<PublishedEvent> findByTargetAndFromAndTo(
             final Bookmark target, 
             final LocalDate from, 
             final LocalDate to) {
@@ -86,28 +86,28 @@ public class PublishingServiceJdoRepository extends AbstractFactoryAndRepository
         final Timestamp fromTs = toTimestampStartOfDayWithOffset(from, 0);
         final Timestamp toTs = toTimestampStartOfDayWithOffset(to, 1);
         
-        final Query<PublishedEventJdo> query;
+        final Query<PublishedEvent> query;
         if(from != null) {
             if(to != null) {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTargetAndTimestampBetween", 
                         "targetStr", targetStr,
                         "from", fromTs,
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTargetAndTimestampAfter", 
                         "targetStr", targetStr,
                         "from", fromTs);
             }
         } else {
             if(to != null) {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTargetAndTimestampBefore", 
                         "targetStr", targetStr,
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTarget", 
                         "targetStr", targetStr);
             }
@@ -116,31 +116,31 @@ public class PublishingServiceJdoRepository extends AbstractFactoryAndRepository
     }
 
     @Programmatic
-    public List<PublishedEventJdo> findByFromAndTo(
+    public List<PublishedEvent> findByFromAndTo(
             final LocalDate from, 
             final LocalDate to) {
         final Timestamp fromTs = toTimestampStartOfDayWithOffset(from, 0);
         final Timestamp toTs = toTimestampStartOfDayWithOffset(to, 1);
         
-        final Query<PublishedEventJdo> query;
+        final Query<PublishedEvent> query;
         if(from != null) {
             if(to != null) {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTimestampBetween", 
                         "from", fromTs,
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTimestampAfter", 
                         "from", fromTs);
             }
         } else {
             if(to != null) {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "findByTimestampBefore", 
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEventJdo>(PublishedEventJdo.class, 
+                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
                         "find");
             }
         }
