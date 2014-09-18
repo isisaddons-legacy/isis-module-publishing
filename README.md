@@ -1,6 +1,6 @@
-# isis-module-xxx #
+# isis-module-publishing #
 
-[![Build Status](https://travis-ci.org/isisaddons/isis-module-xxx.png?branch=master)](https://travis-ci.org/isisaddons/isis-module-xxx)
+[![Build Status](https://travis-ci.org/isisaddons/isis-module-publishing.png?branch=master)](https://travis-ci.org/isisaddons/isis-module-publishing)
 
 This module, intended for use with [Apache Isis](http://isis.apache.org), provides an implementation of Isis'
 `PublishingService` API that persists published events using Isis' own (JDO) objectstore.  The intention is that these
