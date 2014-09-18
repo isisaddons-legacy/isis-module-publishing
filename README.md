@@ -187,8 +187,8 @@ To use "out-of-the-box":
                     ...
 </pre>
                     
-The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  The  
-`PublishingServiceContributions` service is optional but recommended; see below for more information.
+The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  
+The `PublishingServiceContributions` service is optional but recommended; see below for more information.
 
 If instead you want to extend this module's functionality, then we recommend that you fork this repo.  The repo is 
 structured as follows:
