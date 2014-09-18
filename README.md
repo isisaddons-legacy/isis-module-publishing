@@ -120,7 +120,8 @@ So, changing the customer's name:
 
 ![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/080-customer-changed-object-event-created.png)
 
-The additional information of the custom payload is captured in the serialized form of the event:
+The additional information of the custom payload is captured in the serialized form of the event; in the screenshot
+below, see 'addressTown' property:
 
 ![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/090-customer-changed-event-details.png)
 
