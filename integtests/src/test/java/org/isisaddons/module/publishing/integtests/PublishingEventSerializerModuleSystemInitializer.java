@@ -16,6 +16,7 @@
  */
 package org.isisaddons.module.publishing.integtests;
 
+import org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer;
 import org.apache.isis.core.commons.config.IsisConfiguration;
 import org.apache.isis.core.integtestsupport.IsisSystemForTest;
 import org.apache.isis.objectstore.jdo.datanucleus.DataNucleusPersistenceMechanismInstaller;
@@ -46,7 +47,7 @@ public class PublishingEventSerializerModuleSystemInitializer {
             with(new DataNucleusPersistenceMechanismInstaller());
 
             // services annotated with @DomainService
-            withServicesIn( "org.isisaddons.module.publishingeventserializer"
+            withServicesIn( "org.isisaddons.module.publishing"
                             ,"org.apache.isis.core.wrapper"
                             ,"org.apache.isis.applib"
                             ,"org.apache.isis.core.metamodel.services"
@@ -54,11 +55,14 @@ public class PublishingEventSerializerModuleSystemInitializer {
                             ,"org.apache.isis.objectstore.jdo.datanucleus.service.support" // IsisJdoSupportImpl
                             ,"org.apache.isis.objectstore.jdo.datanucleus.service.eventbus" // EventBusServiceJdo
                             );
+
+            withServices(new RestfulObjectsSpecEventSerializer());
         }
 
         private static IsisConfiguration testConfiguration() {
             final IsisConfigurationForJdoIntegTests testConfiguration = new IsisConfigurationForJdoIntegTests();
-            testConfiguration.addRegisterEntitiesPackagePrefix("dom");
+            testConfiguration.addRegisterEntitiesPackagePrefix("org.isisaddons.module.publishing.dom");
+            testConfiguration.addRegisterEntitiesPackagePrefix("org.isisaddons.module.publishing.fixture.dom");
             return testConfiguration;
         }
     }

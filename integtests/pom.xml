@@ -78,6 +78,12 @@ language governing permissions and limitations under the License.
             <artifactId>isis-core-objectstore-jdo-datanucleus</artifactId>
         </dependency>
 
+        <!-- required to use the RestfulObjectsSpecEventSerializer -->
+        <dependency>
+            <groupId>org.apache.isis.core</groupId>
+            <artifactId>isis-core-viewer-restfulobjects-rendering</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>

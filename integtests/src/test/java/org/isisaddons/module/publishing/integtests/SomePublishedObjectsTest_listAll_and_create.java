@@ -46,7 +46,7 @@ public class SomePublishedObjectsTest_listAll_and_create extends PublishingEvent
         assertThat(all.size(), is(3));
         
         PublishedCustomer simpleObject = wrap(all.get(0));
-        assertThat(simpleObject.getName(), is("Foo"));
+        assertThat(simpleObject.getName(), is("Mary"));
     }
     
     @Test
