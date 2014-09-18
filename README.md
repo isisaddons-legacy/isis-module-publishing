@@ -187,8 +187,7 @@ To use "out-of-the-box":
                     ...
 </pre>
                     
-The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  
-The `PublishingServiceContributions` service is optional but recommended; see below for more information.
+The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  The `PublishingServiceContributions` service is optional but recommended; see below for more information.
 
 If instead you want to extend this module's functionality, then we recommend that you fork this repo.  The repo is 
 structured as follows:
@@ -248,7 +247,7 @@ where:
 * `user` is the name of the user that invoked the action or otherwise caused the event to be raised
 * `timestamp` is the timestamp for the transaction
 * `title` is the title of the publishing object
-* `eventType` is an enum distinguishing action invocation or (for changed objects) object created/update/deletedACTION_INVOCATION,
+* `eventType` is an enum distinguishing action invocation or (for changed objects) object created/update/deleted,
 * `targetClass` holds the class of the publishing event, eg com.mycompany.myapp.Customer
 * `targetAction` is a user-friendly name for the action (applicable only for action invocation events)
 * `target` is a Bookmark of the target object, in other words a provides a mechanism to look up the publishing object, 
