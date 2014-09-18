@@ -41,10 +41,21 @@ import org.apache.isis.viewer.restfulobjects.rendering.domainobjects.DomainObjec
  * domain object representation specified by the Restful Objects spec.
  *
  * <p>
- * This implementation has no UI, has no side-effects, and there are no other implementations of the service API, and
- * so it annotated with {@link org.apache.isis.applib.annotation.DomainService}.  This class is implemented in the
- * <tt>o.a.i.module:isis-module-publishingeventserializer-ro</tt> module.  If that module is included in the classpath,
- * it this means that this service is automatically registered; no further configuration is required.
+ * An implementation of {@link org.apache.isis.applib.services.publish.EventSerializer} (such as this one)
+ * is required to be registered as a domain service in order to use the
+ * {@link org.apache.isis.applib.services.publish.PublishingService}.  This implementation, if used, must be
+ * explicitly registered (in <code>isis.properties</code>); it is <i>not</i> annotated as a
+ * {@link org.apache.isis.applib.annotation.DomainService} to allow for alternative implementations to be used instead.
+ *
+ * <p>
+ * If this implementation <i>is</i> used, however, then its dependency must also be added onto the classpath:
+ * </p>
+ * <pre>
+ * &lt;dependency&gt;
+ *   &lt;groupId&gt;org.apache.isis.core&lt;/groupId&gt;
+ *   &lt;artifactId&gt;isis-core-viewer-restfulobjects-rendering&lt;/artifactId&gt;
+ * &lt;/dependency&gt;
+ * </pre>
  */
 public class RestfulObjectsSpecEventSerializer implements EventSerializer {
 

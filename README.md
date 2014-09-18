@@ -142,39 +142,52 @@ At the time of writing the plan is to remove this module from Isis Core (so it w
 continue to develop it solely as one of the [Isis Addons](http://www.isisaddons.org) modules.
 
 
-## How to configure/use ##
-
-.... UP TO HERE....
-
+## How to configure ##
 
 You can either use this module "out-of-the-box", or you can fork this repo and extend to your own requirements. 
 
 To use "out-of-the-box":
 
-* update your classpath by adding this dependency in your dom project's `pom.xml`:
+* update your classpath by adding this dependency in your webapp project's `pom.xml`:
 
 <pre>
     &lt;dependency&gt;
-        &lt;groupId&gt;org.isisaddons.module.xxx&lt;/groupId&gt;
-        &lt;artifactId&gt;isis-module-xxx-dom&lt;/artifactId&gt;
+        &lt;groupId&gt;org.isisaddons.module.publishing&lt;/groupId&gt;
+        &lt;artifactId&gt;isis-module-publishing-dom&lt;/artifactId&gt;
         &lt;version&gt;1.6.0&lt;/version&gt;
     &lt;/dependency&gt;
 </pre>
 
+* assuming you are using the provided `RestfulObjectsSpecEventSerializer` (that is, haven't written your own 
+  implementation of the `EventSerializer` API), then also update your classpath to add this dependency in your 
+  webapp project's `pom.xml`:
+
+<pre>
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.isis.core&lt;/groupId&gt;
+        &lt;artifactId&gt;isis-core-viewer-restfulobjects-rendering&lt;/artifactId&gt;
+        &lt;version&gt;1.6.0&lt;/version&gt;
+    &lt;/dependency&gt;
+</pre>
+
+  Check for later releases by searching [Maven Central Repo](http://search.maven.org/#search%7Cga%7C1%7Cisis-module-publishing-dom).
+  
 * update your `WEB-INF/isis.properties`:
 
 <pre>
     isis.services-installer=configuration-and-annotation
     isis.services.ServicesInstallerFromAnnotation.packagePrefix=
                     ...,\
-                    org.isisaddons.module.xxx.xxx,\
+                    org.isisaddons.module.publishing,\
                     ...
 
     isis.services = ...,\
-                    org.isisaddons.module.audit.XxxContributions,\
+                    org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer,\
+                    org.isisaddons.module.publishing.dom.PublishingServiceContributions,\
                     ...
                     
-The `XxxContributions` service is optional but recommended; see below for more information.
+The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  The  
+`PublishingServiceContributions` service is optional but recommended; see below for more information.
 
 If instead you want to extend this module's functionality, then we recommend that you fork this repo.  The repo is 
 structured as follows:
@@ -185,30 +198,112 @@ structured as follows:
 * `integtests` - integration tests for the module; depends on `fixture`
 * `webapp    ` - demo webapp (see above screenshots); depends on `dom` and `fixture`
 
-Xxx
 
-## API ##
+#### Setting the Base URL for the Restful Objects Event Serializer ####
 
-### XxxService ###
+The `RestfulObjectsSpecEventSerializer` serializes event payloads into a JSON string that contains URLs such that an
+external (subscribing) system can then access the publishing and related objects (using those URLs) by way of Isis'
+Restful Objects viewer.
 
-The `XxxService` defines the following API:
+For this to work correctly, the base url must be specified in `isis.properties`, for example:
 
-<pre>
-public interface XxxService {
-}
-</pre>
+    isis.viewer.restfulobjects.RestfulObjectsSpecEventSerializer.baseUrl=http://isisapp.mycompany.com:8080/restful/
 
+The default value if not specified is in fact `http://localhost:8080/restful/` (for development/testing purposes only).
 
-## Implementation ##
+## API & Implementation ##
+
+### PublishingService ###
+
+The `PublishingService` API (in the Isis applib) is defined as:
+
+    public interface PublishingService {
+        public void publish(EventMetadata metadata, EventPayload payload);
+        void setEventSerializer(EventSerializer eventSerializer);
+    }
+
+The `EventMetadata` is a concrete class with the fields:
+
+    public class EventMetadata {
+        
+        private final UUID transactionId;
+        private final int sequence;
+        private final String user;
+        private final java.sql.Timestamp javaSqlTimestamp;
+        private final String title;
+        private final EventType eventType;
+        private final String targetClass;
+        private final String targetAction;
+        private final Bookmark target;
+        private final String actionIdentifier;
+        
+        ...
+    }
+
+where:
+
+* `transactionId` is a unique identifier (a GUID) of the transaction in which this event was raised.
+* `sequence` discriminates multiple events raised in a single transaction
+* `user` is the name of the user that invoked the action or otherwise caused the event to be raised
+* `timestamp` is the timestamp for the transaction
+* `title` is the title of the publishing object
+* `eventType` is an enum distinguishing action invocation or (for changed objects) object created/update/deletedACTION_INVOCATION,
+* `targetClass` holds the class of the publishing event, eg com.mycompany.myapp.Customer
+* `targetAction` is a user-friendly name for the action (applicable only for action invocation events)
+* `target` is a Bookmark of the target object, in other words a provides a mechanism to look up the publishing object, 
+  eg CUS:L_1234 to identify customer with id 1234. ("CUS" corresponds to the @ObjectType annotation/facet).
+* `actionIdentifier` is the formal/canonical action name  (applicable only for action invocation events)
+
+This module provides `org.isisaddons.module.publishing.dom.PublishingService` as an implementation of the API.  The
+service is annotated with `@DomainService` so there is no requirement to register in `isis.properties`.
+
+### EventSerializer ###
+
+The `EventSerializer` API (in Isis applib) is defined as:
+
+    public interface EventSerializer {
+        public Object serialize(EventMetadata metadata, EventPayload payload);    
+    }
+
+This module provides `org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer` as an
+implementation of this API.  Note that this service must be explicitly registered in `isis.properties` _and_ its 
+Maven dependency on `o.a.i.core:isis-core-viewer-restfulobjects-rendering` must be added to the classpath (see above
+for details).  This has been done to allow alternative implementations of the `EventSerializer` API to be configured
+instead if required.
+
 
 ## Supporting Services ##
 
+As well as the `PublishingService` and `EventSerializer` implementations, the module also provides a number of other
+domain services:
+
+* `PublishingServiceRepository` provides the ability to search for persisted (`PublishedEvent`) events.  None of its
+  actions are visible in the user interface (they are all @Programmatic) and so this service is automatically 
+  registered.
+  
+* `PublishingServiceContributions` provides the `publishedEvents` contributed collection to the `HasTransactionId` 
+  interface. This will therefore display all published events that occurred in a given transaction, in other words 
+  whenever a command, an audit entry or another published event is displayed.
+
 ## Related Modules/Services ##
 
-... referenced by the [Isis Add-ons](http://www.isisaddons.org) website.
+The Isis applib defines a number of closely related APIs, `PublishingService` being one of them.  Implementations of 
+these various services can be found referenced by the [Isis Add-ons](http://isisaddons.org) website.
 
+The `CommandContext` defines the `Command` class which provides request-scoped information about an action invocation. 
+Commands can be thought of as being the cause of an action; they are created "before the fact". 
 
-talk about TransactionId
+The `CommandService` service is an optional service that acts as a `Command` factory and allows `Command`s to be 
+persisted. `CommandService`'s API introduces the concept of a transactionId; this is the same value as is passed to the 
+`PublishingService`'s in the `EventMetadata` object.
+
+The `AuditingService3` service enables audit entries to be persisted for any change to any object. The command can be 
+thought of as the "cause" of a change, the audit entries as the "effect".
+
+If all these services are configured - such that commands, audit entries and published events are all persisted, then 
+the transactionId that is common to all enables seamless navigation between each. (This is implemented through 
+contributed actions/properties/collections; `PublishedEvent` implements the `HasTransactionId` interface in Isis' 
+applib, and it is this interface that each module has services that contribute to).
 
 
 ## Legal Stuff ##
