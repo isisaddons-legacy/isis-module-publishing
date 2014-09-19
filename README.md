@@ -157,8 +157,9 @@ the code of those two modules, with the following changes:
 
 Otherwise the functionality is identical; warts and all!
 
-At the time of writing the plan is to remove this module from Isis Core (so it won't be in Isis 1.7.0), and instead 
-continue to develop it solely as one of the [Isis Addons](http://www.isisaddons.org) modules.
+At the time of writing the plan is to remove those two modules from Isis Core (so they won't be in Isis 1.7.0), and 
+instead continue to develop the functionality solely as this module, one of the 
+[Isis Addons](http://www.isisaddons.org).
 
 
 ## How to configure ##
