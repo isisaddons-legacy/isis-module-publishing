@@ -20,7 +20,7 @@ A full description of Isis' Publishing Service API can be found on
 [this page](http://isis.apache.org/reference/services/publishing-service.html) of the [Isis website](http://isis.apache.org).
 However, the diagram below illustrates the main concepts:
 
-![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/domain-model.png)
+![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/class-diagram.png)
 
 The `PublishedObject` and `PublishedAction` annotations specify the event payload factory to use to create a 
 representation of the event; if no factory is specified then a default factory is used.
