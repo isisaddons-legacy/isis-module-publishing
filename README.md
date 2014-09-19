@@ -13,9 +13,12 @@ the published events into a string format for persistence; specifically JSON.  T
 of the [Restful Objects](http://restfulobjects.org) specification and includes the URL of the original publishing
 object such that it can be accessed using Isis' Restful Objects viewer if required.
 
+
 ## Domain Model ##
 
-The diagram below shows the main concepts of Isis' Publishing Service:
+A full description of Isis' Publishing Service API can be found on 
+[this page](http://isis.apache.org/reference/services/publishing-service.html) of the [Isis website](http://isis.apache.org).
+However, the diagram below illustrates the main concepts:
 
 ![](https://raw.github.com/isisaddons/isis-module-publishing/master/images/domain-model.png)
 
