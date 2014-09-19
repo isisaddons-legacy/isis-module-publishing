@@ -197,14 +197,14 @@ To use "out-of-the-box":
 <pre>
     isis.services-installer=configuration-and-annotation
     isis.services.ServicesInstallerFromAnnotation.packagePrefix=
-                    ...,\
-                    org.isisaddons.module.publishing,\
-                    ...
+            ...,\
+            org.isisaddons.module.publishing,\
+            ...
 
     isis.services = ...,\
-                    org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer,\
-                    org.isisaddons.module.publishing.dom.PublishingServiceContributions,\
-                    ...
+            org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer,\
+            org.isisaddons.module.publishing.dom.PublishingServiceContributions,\
+            ...
 </pre>
                     
 The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  The `PublishingServiceContributions` service is optional but recommended; see below for more information.
@@ -227,7 +227,8 @@ Restful Objects viewer.
 
 For this to work correctly, the base url must be specified in `isis.properties`, for example:
 
-    isis.viewer.restfulobjects.RestfulObjectsSpecEventSerializer.baseUrl=http://isisapp.mycompany.com:8080/restful/
+    isis.viewer.restfulobjects.RestfulObjectsSpecEventSerializer.baseUrl=\
+                                             http://isisapp.mycompany.com:8080/restful/
 
 The default value if not specified is in fact `http://localhost:8080/restful/` (for development/testing purposes only).
 
@@ -235,7 +236,7 @@ The default value if not specified is in fact `http://localhost:8080/restful/` (
 
 ### PublishingService ###
 
-The `PublishingService` API (in the Isis applib) is defined as:
+The `PublishingService` API (in Isis' applib) is defined as:
 
     public interface PublishingService {
         public void publish(EventMetadata metadata, EventPayload payload);
@@ -245,7 +246,6 @@ The `PublishingService` API (in the Isis applib) is defined as:
 The `EventMetadata` is a concrete class with the fields:
 
     public class EventMetadata {
-        
         private final UUID transactionId;
         private final int sequence;
         private final String user;
@@ -256,7 +256,6 @@ The `EventMetadata` is a concrete class with the fields:
         private final String targetAction;
         private final Bookmark target;
         private final String actionIdentifier;
-        
         ...
     }
 
@@ -279,7 +278,7 @@ service is annotated with `@DomainService` so there is no requirement to registe
 
 ### EventSerializer ###
 
-The `EventSerializer` API (in Isis applib) is defined as:
+The `EventSerializer` API (in Isis' applib) is defined as:
 
     public interface EventSerializer {
         public Object serialize(EventMetadata metadata, EventPayload payload);    
@@ -294,11 +293,11 @@ instead if required.
 
 ## Supporting Services ##
 
-As well as the `PublishingService` and `EventSerializer` implementations, the module also provides a number of other
+As well as the `PublishingService` and `EventSerializer` implementations, the module also provides a couple of other
 domain services:
 
 * `PublishingServiceRepository` provides the ability to search for persisted (`PublishedEvent`) events.  None of its
-  actions are visible in the user interface (they are all @Programmatic) and so this service is automatically 
+  actions are visible in the user interface (they are all `@Programmatic`) and so this service is automatically 
   registered.
   
 * `PublishingServiceContributions` provides the `publishedEvents` contributed collection to the `HasTransactionId` 
@@ -307,30 +306,30 @@ domain services:
 
 ## Related Modules/Services ##
 
-The Isis applib defines a number of closely related APIs, `PublishingService` being one of them.  Implementations of 
-these various services can be found referenced by the [Isis Add-ons](http://isisaddons.org) website.
+The Isis applib defines a number of closely related APIs.
 
 The `CommandContext` defines the `Command` class which provides request-scoped information about an action invocation. 
-Commands can be thought of as being the cause of an action; they are created "before the fact". 
-
-The `CommandService` service is an optional service that acts as a `Command` factory and allows `Command`s to be 
-persisted. `CommandService`'s API introduces the concept of a transactionId; this is the same value as is passed to the 
-`PublishingService`'s in the `EventMetadata` object.
+Commands can be thought of as being the cause of an action; they are created "before the fact".   The `CommandService` 
+service is an optional service that acts as a `Command` factory and allows `Command`s to be persisted. 
+`CommandService`'s API introduces the concept of a transactionId; this is the same value as is passed to the 
+`PublishingService` in the `EventMetadata` object.
 
 The `AuditingService3` service enables audit entries to be persisted for any change to any object. The command can be 
 thought of as the "cause" of a change, the audit entries as the "effect".
 
-If all these services are configured - such that commands, audit entries and published events are all persisted, then 
-the transactionId that is common to all enables seamless navigation between each. (This is implemented through 
-contributed actions/properties/collections; `PublishedEvent` implements the `HasTransactionId` interface in Isis' 
-applib, and it is this interface that each module has services that contribute to).
+If these services and also the `PublishingService` are all configured then the transactionId that is common to all (in
+the persisted command, audit entry and published event objects) enables seamless navigation between each.  This is 
+implemented through contributed actions/properties/collections; each of the persisted entities implements the 
+`HasTransactionId` interface in Isis' applib, and it is this interface that each module has services that contribute to.
+
+Implementations of these various services can be found on the [Isis Add-ons](http://isisaddons.org) website.
 
 
 ## Legal Stuff ##
  
 #### License ####
 
-    Copyright 2014 Dan Haywood
+    Copyright 2013+2014 Dan Haywood
 
     Licensed under the Apache License, Version 2.0 (the
     "License"); you may not use this file except in compliance
