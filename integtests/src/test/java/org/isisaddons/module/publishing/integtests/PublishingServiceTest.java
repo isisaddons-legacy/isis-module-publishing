@@ -118,8 +118,7 @@ public class PublishingServiceTest extends PublishingEventSerializerModuleIntegT
 
                 // then
                 final List<PublishedEvent> events = publishingServiceRepository.findByTargetAndFromAndTo(
-                        bookmarkFor(publishedCustomer), null, null);
-//                final List<PublishedEvent> events = publishingServiceRepository.findQueued();
+                        bookmarkFor(publishedCustomerWO), null, null);
 
                 assertThat(events, is(not(empty())));
                 final PublishedEvent publishedEvent = events.get(0);
