@@ -166,9 +166,7 @@ Then log on using user: `sven`, password: `pass`
 
 ## Relationship to Apache Isis Core ##
 
-Isis Core 1.6.0 included the `org.apache.isis.core:isis-module-publishing:1.6.0` and also 
-`org.apache.isis.core:isis-module-publishingeventserializer:1.6.0` Maven artifacts.  This module is a direct copy of 
-the code of those two modules, with the following changes:
+Isis Core 1.6.0 included the `org.apache.isis.module:isis-module-publishing-jdo:1.6.0` and also `org.apache.isis.module:isis-module-publishingeventserializer:1.6.0` Maven artifacts.  This module is a direct copy of the code of those two modules, with the following changes:
 
 * package names have been altered from `org.apache.isis` to `org.isisaddons.module.publishing`
 * the `persistent-unit` (in the JDO manifest) has changed from `isis-module-publishing` to 
@@ -176,9 +174,7 @@ the code of those two modules, with the following changes:
 
 Otherwise the functionality is identical; warts and all!
 
-At the time of writing the plan is to remove those two modules from Isis Core (so they won't be in Isis 1.7.0), and 
-instead continue to develop the functionality solely as this module, one of the 
-[Isis Addons](http://www.isisaddons.org).
+Isis 1.7.0 no longer ships with `org.apache.isis.module:isis-module-publishing-jdo` or `org.apache.isis.module:isis-module-publishingeventserializer-ro`; instead use this addon module.
 
 
 ## How to configure/use ##
@@ -205,7 +201,7 @@ To use "out-of-the-box":
     &lt;dependency&gt;
         &lt;groupId&gt;org.apache.isis.core&lt;/groupId&gt;
         &lt;artifactId&gt;isis-core-viewer-restfulobjects-rendering&lt;/artifactId&gt;
-        &lt;version&gt;1.6.0&lt;/version&gt;
+        &lt;version&gt;1.7.0&lt;/version&gt;
     &lt;/dependency&gt;
 </pre>
 
@@ -346,6 +342,7 @@ Implementations of these various services can be found on the [Isis Add-ons](htt
 
 ## Change Log ##
 
+* `1.7.0` - Released against Isis 1.7.0.
 * `1.6.0` - re-released as part of isisaddons, with classes under package `org.isisaddons.module.publishing`
 
 
@@ -353,7 +350,7 @@ Implementations of these various services can be found on the [Isis Add-ons](htt
  
 #### License ####
 
-    Copyright 2013+2014 Dan Haywood
+    Copyright 2013,2014 Dan Haywood
 
     Licensed under the Apache License, Version 2.0 (the
     "License"); you may not use this file except in compliance
@@ -401,8 +398,8 @@ The `release.sh` script automates the release process.  It performs the followin
 
 For example:
 
-    sh release.sh 1.6.1 \
-                  1.6.2-SNAPSHOT \
+    sh release.sh 1.7.0 \
+                  1.7.1-SNAPSHOT \
                   dan@haywood-associates.co.uk \
                   "this is not really my passphrase"
     
