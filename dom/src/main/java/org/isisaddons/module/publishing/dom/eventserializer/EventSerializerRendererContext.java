@@ -81,6 +81,46 @@ class EventSerializerRendererContext implements RendererContext {
         return IsisContext.getLocalization();
     }
 
+    @Override
+    public boolean honorUiHints() {
+        return false;
+    }
+
+    @Override
+    public boolean objectPropertyValuesOnly() {
+        return false;
+    }
+
+    @Override
+    public boolean suppressDescribedByLinks() {
+        return false;
+    }
+
+    @Override
+    public boolean suppressUpdateLink() {
+        return false;
+    }
+
+    @Override
+    public boolean suppressMemberId() {
+        return false;
+    }
+
+    @Override
+    public boolean suppressMemberLinks() {
+        return false;
+    }
+
+    @Override
+    public boolean suppressMemberExtensions() {
+        return false;
+    }
+
+    @Override
+    public boolean suppressMemberDisabledReason() {
+        return false;
+    }
+
     private Set<Oid> rendered = Sets.newHashSet();
     @Override
     public boolean canEagerlyRender(ObjectAdapter objectAdapter) {
