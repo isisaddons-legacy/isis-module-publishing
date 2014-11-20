@@ -227,6 +227,7 @@ To use "out-of-the-box":
 The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  The `PublishingServiceContributions` service is optional but recommended; see below for more information.
 
 
+
 #### "Out-of-the-box" (-SNAPSHOT) ####
 
 If you want to use the current `-SNAPSHOT`, then the steps are the same as above, except:
@@ -273,6 +274,16 @@ structured as follows:
 * `webapp    ` - demo webapp (see above screenshots); depends on `dom` and `fixture`
 
 
+#### PublishedEvent serialized form ####
+
+The `PublishedEvent` entity can either persist the serialized form of the event as a zipped byte array or as a CLOB.  Which is used is determined by a configuration setting in `isis.properties`: 
+
+    # whether to persist the event data as a "clob" or as a "zipped" byte[]
+    isis.persistor.datanucleus.PublishingService.serializedForm=clob
+
+If not specified, then "zipped" is the default.
+
+
 #### Setting the Base URL for the Restful Objects Event Serializer ####
 
 The `RestfulObjectsSpecEventSerializer` serializes event payloads into a JSON string that contains URLs such that an
@@ -285,6 +296,7 @@ For this to work correctly, the base url must be specified in `isis.properties`,
                                              http://isisapp.mycompany.com:8080/restful/
 
 The default value if not specified is in fact `http://localhost:8080/restful/` (for development/testing purposes only).
+
 
 ## API & Implementation ##
 
@@ -378,6 +390,7 @@ implemented through contributed actions/properties/collections; each of the pers
 
 Implementations of these various services can be found on the [Isis Add-ons](http://isisaddons.org) website.
 
+Finally, Dan Haywood's [camel-isis-pubsubjdo](https://github.com/danhaywood/camel-isis-pubsubjdo) project up on github shows how to poll and process the persisted `PublishedEvent` table using [Apache Camel](http://camel.apache.org).
 
 ## Change Log ##
 
