@@ -20,8 +20,18 @@ import java.util.UUID;
 import javax.jdo.annotations.IdentityType;
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.Identifier;
-import org.apache.isis.applib.annotation.*;
-import org.apache.isis.applib.annotation.ActionSemantics.Of;
+import org.apache.isis.applib.annotation.Action;
+import org.apache.isis.applib.annotation.DomainObject;
+import org.apache.isis.applib.annotation.DomainObjectLayout;
+import org.apache.isis.applib.annotation.Editing;
+import org.apache.isis.applib.annotation.InvokeOn;
+import org.apache.isis.applib.annotation.MemberGroupLayout;
+import org.apache.isis.applib.annotation.MemberOrder;
+import org.apache.isis.applib.annotation.Programmatic;
+import org.apache.isis.applib.annotation.Property;
+import org.apache.isis.applib.annotation.PropertyLayout;
+import org.apache.isis.applib.annotation.SemanticsOf;
+import org.apache.isis.applib.annotation.Where;
 import org.apache.isis.applib.services.HasTransactionId;
 import org.apache.isis.applib.services.bookmark.BookmarkService;
 import org.apache.isis.applib.services.publish.EventType;
@@ -104,9 +114,13 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
         columnSpans={6,0,6},
         left={"Identifiers","Target"},
         right={"Detail","State"})
-@Immutable
-@Named("Published Event")
-@ObjectType("IsisPublishedEvent")
+@DomainObject(
+        editing = Editing.DISABLED,
+        objectType = "IsisPublishedEvent"
+)
+@DomainObjectLayout(
+        named = "Published Event"
+)
 public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransactionId {
 
     public static enum State {
@@ -142,8 +156,10 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     private String user;
     
     @javax.jdo.annotations.Column(allowsNull="false", length=50)
+    @Property(
+            hidden = Where.PARENTED_TABLES
+    )
     @MemberOrder(name="Identifiers", sequence = "10")
-    @Hidden(where=Where.PARENTED_TABLES)
     public String getUser() {
         return user;
     }
@@ -161,8 +177,10 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
 
     @javax.jdo.annotations.Persistent
     @javax.jdo.annotations.Column(allowsNull="false")
+    @Property(
+            hidden = Where.PARENTED_TABLES
+    )
     @MemberOrder(name="Identifiers", sequence = "20")
-    @Hidden(where=Where.PARENTED_TABLES)
     public java.sql.Timestamp getTimestamp() {
         return timestamp;
     }
@@ -188,8 +206,10 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
      */
     @javax.jdo.annotations.PrimaryKey
     @javax.jdo.annotations.Column(allowsNull="false",length=JdoColumnLength.TRANSACTION_ID)
+    @Property(
+            hidden = Where.PARENTED_TABLES
+    )
     @MemberOrder(name="Identifiers", sequence = "30")
-    @Hidden(where=Where.PARENTED_TABLES)
     @Override
     public UUID getTransactionId() {
         return transactionId;
@@ -240,7 +260,9 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
      *               the action identifier is available through {@link #getMemberIdentifier()}.
      */
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.PublishedEvent.TITLE)
-    @Hidden
+    @Property(
+            hidden = Where.EVERYWHERE
+    )
     @Deprecated
     public String getTitle() {
         return title;
@@ -275,9 +297,11 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     private String targetClass;
 
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.TARGET_CLASS)
-    @TypicalLength(30)
+    @PropertyLayout(
+            named = "Class",
+            typicalLength = 30
+    )
     @MemberOrder(name="Target", sequence = "10")
-    @Named("Class")
     public String getTargetClass() {
         return targetClass;
     }
@@ -297,9 +321,11 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
      * Only populated for {@link EventType#ACTION_INVOCATION}
      */
     @javax.jdo.annotations.Column(allowsNull="true", length=JdoColumnLength.TARGET_ACTION)
-    @TypicalLength(30)
+    @PropertyLayout(
+            named = "Action",
+            typicalLength = 30
+    )
     @MemberOrder(name="Target", sequence = "20")
-    @Named("Action")
     public String getTargetAction() {
         return targetAction;
     }
@@ -317,8 +343,10 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     
     private String targetStr;
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.BOOKMARK, name="target")
+    @PropertyLayout(
+            named = "Object"
+    )
     @MemberOrder(name="Target", sequence="30")
-    @Named("Object")
     public String getTargetStr() {
         return targetStr;
     }
@@ -348,8 +376,10 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
      * properties rather than simply just actions.
      */
     @javax.jdo.annotations.Column(allowsNull="true", length=JdoColumnLength.MEMBER_IDENTIFIER)
-    @TypicalLength(60)
-    @Hidden(where=Where.ALL_TABLES)
+    @PropertyLayout(
+            hidden = Where.ALL_TABLES,
+            typicalLength = 60
+    )
     @MemberOrder(name="Detail",sequence = "20")
     public String getMemberIdentifier() {
         return memberIdentifier;
@@ -388,9 +418,13 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // //////////////////////////////////////
 
     @javax.jdo.annotations.NotPersistent
-    @NotPersisted
-    @MultiLine(numberOfLines=14)
-    @Hidden(where=Where.ALL_TABLES)
+    @Property(
+            notPersisted = true
+    )
+    @PropertyLayout(
+            hidden = Where.ALL_TABLES,
+            multiLine = 14
+    )
     @MemberOrder(name="Detail", sequence = "40")
     public String getSerializedForm() {
         byte[] zipped = getSerializedFormZipped();
@@ -440,23 +474,30 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // delete    (action)
     // //////////////////////////////////////
 
- 
-    @Bulk
-    @ActionSemantics(Of.IDEMPOTENT)
+
+    @Action(
+            invokeOn = InvokeOn.OBJECT_AND_COLLECTION,
+            semantics = SemanticsOf.IDEMPOTENT
+    )
     @MemberOrder( name="State", sequence="10")
     public PublishedEvent processed() {
         return setStateAndReturn(State.PROCESSED);
     }
 
 
-    @Bulk
-    @ActionSemantics(Of.IDEMPOTENT)
+    @Action(
+            invokeOn = InvokeOn.OBJECT_AND_COLLECTION,
+            semantics = SemanticsOf.IDEMPOTENT
+    )
     @MemberOrder(name="State", sequence="11")
     public PublishedEvent reQueue() {
         return setStateAndReturn(State.QUEUED);
     }
 
-    @Bulk
+    @Action(
+            invokeOn = InvokeOn.OBJECT_AND_COLLECTION,
+            semantics = SemanticsOf.IDEMPOTENT
+    )
     @MemberOrder(name="State", sequence="12")
     public void delete() {
         container.removeIfNotAlready(this);

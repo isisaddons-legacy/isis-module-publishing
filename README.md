@@ -217,15 +217,7 @@ To use "out-of-the-box":
             ...,\
             org.isisaddons.module.publishing,\
             ...
-
-    isis.services = ...,\
-            org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer,\
-            org.isisaddons.module.publishing.dom.PublishingServiceContributions,\
-            ...
 </pre>
-                    
-The `RestfulObjectsSpecEventSerializer` (or some other implementation of `EventSerializer`) must be registered.  The `PublishingServiceContributions` service is optional but recommended; see below for more information.
-
 
 
 #### "Out-of-the-box" (-SNAPSHOT) ####
@@ -363,12 +355,43 @@ As well as the `PublishingService` and `EventSerializer` implementations, the mo
 domain services:
 
 * `PublishingServiceRepository` provides the ability to search for persisted (`PublishedEvent`) events.  None of its
-  actions are visible in the user interface (they are all `@Programmatic`) and so this service is automatically 
-  registered.
+  actions are visible in the user interface (they are all `@Programmatic`).
   
-* `PublishingServiceContributions` provides the `publishedEvents` contributed collection to the `HasTransactionId` 
-  interface. This will therefore display all published events that occurred in a given transaction, in other words 
-  whenever a command, an audit entry or another published event is displayed.
+* (In 1.8.0-SNAPSHOT, the) `PublishingServiceMenu` provides actions to search for `PublishedEvent`s, underneath an 'Activity' menu on the
+secondary menu bar.
+
+* `PublishingServiceContributions` provides the `publishedEvents` contributed collection to the `HasTransactionId`
+  interface.  This will therefore display all published events that occurred in a given transaction.
+
+* `RestfulObjectsSpecEventSerializer` is an implementation of the `EventSerializer` API that serializes the event into
+   a JSON representation based on that of the [http://restfulobjects.org](Restful Objects specification).
+
+In 1.7.0, it is necessary to explicitly register `PublishingServiceContributions` in `isis.properties`, the
+rationale being that this service contributes functionality that appears in the user interface.
+
+In 1.8.0-SNAPSHOT the above policy is reversed: the  `PublishingServiceMenu` and `PublishingServiceContributions`
+services are both automatically registered, and both provide functionality that will appear in the user interface.
+If this is not required, then either use security permissions or write a vetoing subscriber on the event bus to hide
+this functionality, eg:
+
+    @DomainService(nature = NatureOfService.DOMAIN)
+    public class HideIsisAddonsPublishingFunctionality {
+
+        @Programmatic @PostConstruct
+        public void postConstruct() { eventBusService.register(this); }
+
+        @Programmatic @PreDestroy
+        public void preDestroy() { eventBusService.unregister(this); }
+
+        @Programmatic @Subscribe
+        public void on(final PublishingModule.ActionDomainEvent<?> event) { event.hide(); }
+
+        @Inject
+        private EventBusService eventBusService;
+    }
+
+The default `RestfulObjectsSpecEventSerializer` is also automatically registered.  If you want to use some other
+implementation of `EventSerializer`, then register in `isis.properties`.
 
 ## Related Modules/Services ##
 
