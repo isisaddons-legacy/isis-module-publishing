@@ -81,24 +81,24 @@ public class PublishingServiceMenu extends AbstractService {
 
     // //////////////////////////////////////
 
-    public static class AllQueuedEventsDomainEvent extends ActionDomainEvent {
-        public AllQueuedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
+    public static class QueuedPublishedEventsDomainEvent extends ActionDomainEvent {
+        public QueuedPublishedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
             super(source, identifier, args);
         }
     }
 
     @Action(
-            domainEvent = AllQueuedEventsDomainEvent.class,
+            domainEvent = QueuedPublishedEventsDomainEvent.class,
             semantics = SemanticsOf.SAFE
     )
     @ActionLayout(
             cssClassFa = "fa-list"
     )
     @MemberOrder(sequence="10")
-    public List<PublishedEvent> allQueuedEvents() {
+    public List<PublishedEvent> queuedPublishedEvents() {
         return publishingServiceRepository.findQueued();
     }
-    public boolean hideAllQueuedEvents() {
+    public boolean hideQueuedPublishedEvents() {
         return publishingServiceRepository == null;
     }
 
@@ -115,7 +115,7 @@ public class PublishingServiceMenu extends AbstractService {
             semantics = SemanticsOf.SAFE
     )
     @ActionLayout(
-            cssClassFa = "fa-filter"
+            cssClassFa = "fa-search"
     )
     @MemberOrder(sequence="20")
     public List<PublishedEvent> findPublishedEvents(

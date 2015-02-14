@@ -16,7 +16,6 @@
  */
 package org.isisaddons.module.publishing.integtests;
 
-import org.isisaddons.module.publishing.dom.eventserializer.RestfulObjectsSpecEventSerializer;
 import org.apache.isis.core.commons.config.IsisConfiguration;
 import org.apache.isis.core.integtestsupport.IsisSystemForTest;
 import org.apache.isis.objectstore.jdo.datanucleus.DataNucleusPersistenceMechanismInstaller;
@@ -55,8 +54,6 @@ public class PublishingEventSerializerModuleSystemInitializer {
                             ,"org.apache.isis.objectstore.jdo.datanucleus.service.support" // IsisJdoSupportImpl
                             ,"org.apache.isis.objectstore.jdo.datanucleus.service.eventbus" // EventBusServiceJdo
                             );
-
-            withServices(new RestfulObjectsSpecEventSerializer());
         }
 
         private static IsisConfiguration testConfiguration() {
