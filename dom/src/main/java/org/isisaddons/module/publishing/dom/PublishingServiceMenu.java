@@ -44,36 +44,9 @@ import org.apache.isis.applib.services.clock.ClockService;
 )
 public class PublishingServiceMenu extends AbstractService {
 
-    public static abstract class PropertyDomainEvent<T> extends PublishingModule.PropertyDomainEvent<PublishingServiceMenu, T> {
-        public PropertyDomainEvent(final PublishingServiceMenu source, final Identifier identifier) {
-            super(source, identifier);
-        }
-
-        public PropertyDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final T oldValue, final T newValue) {
-            super(source, identifier, oldValue, newValue);
-        }
-    }
-
-    public static abstract class CollectionDomainEvent<T> extends PublishingModule.CollectionDomainEvent<PublishingServiceMenu, T> {
-        public CollectionDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final org.apache.isis.applib.services.eventbus.CollectionDomainEvent.Of of) {
-            super(source, identifier, of);
-        }
-
-        public CollectionDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final org.apache.isis.applib.services.eventbus.CollectionDomainEvent.Of of, final T value) {
-            super(source, identifier, of, value);
-        }
-    }
-
     public static abstract class ActionDomainEvent extends PublishingModule.ActionDomainEvent<PublishingServiceMenu> {
-        public ActionDomainEvent(final PublishingServiceMenu source, final Identifier identifier) {
-            super(source, identifier);
-        }
 
         public ActionDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... arguments) {
-            super(source, identifier, arguments);
-        }
-
-        public ActionDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final List<Object> arguments) {
             super(source, identifier, arguments);
         }
     }

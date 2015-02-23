@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.joda.time.LocalDate;
 import org.apache.isis.applib.AbstractFactoryAndRepository;
 import org.apache.isis.applib.annotation.DomainService;
+import org.apache.isis.applib.annotation.NatureOfService;
 import org.apache.isis.applib.annotation.Programmatic;
 import org.apache.isis.applib.query.Query;
 import org.apache.isis.applib.query.QueryDefault;
@@ -36,13 +37,15 @@ import org.apache.isis.applib.services.bookmark.Bookmark;
  * thus has been annotated with {@link org.apache.isis.applib.annotation.DomainService}.  This means that there is no
  * need to explicitly register it as a service (eg in <tt>isis.properties</tt>).
  */
-@DomainService
+@DomainService(
+        nature = NatureOfService.DOMAIN
+)
 public class PublishingServiceRepository extends AbstractFactoryAndRepository {
 
     @Programmatic
     public List<PublishedEvent> findQueued() {
         return allMatches(
-                new QueryDefault<PublishedEvent>(PublishedEvent.class,
+                new QueryDefault<>(PublishedEvent.class,
                         "findByStateOrderByTimestamp", 
                         "state", PublishedEvent.State.QUEUED));
     }
@@ -50,7 +53,7 @@ public class PublishingServiceRepository extends AbstractFactoryAndRepository {
     @Programmatic
     public List<PublishedEvent> findProcessed() {
         return allMatches(
-                new QueryDefault<PublishedEvent>(PublishedEvent.class,
+                new QueryDefault<>(PublishedEvent.class,
                         "findByStateOrderByTimestamp", 
                         "state", PublishedEvent.State.PROCESSED));
     }
@@ -58,7 +61,7 @@ public class PublishingServiceRepository extends AbstractFactoryAndRepository {
     @Programmatic
     public List<PublishedEvent> findByTransactionId(final UUID transactionId) {
         return allMatches(
-                new QueryDefault<PublishedEvent>(PublishedEvent.class,
+                new QueryDefault<>(PublishedEvent.class,
                         "findByTransactionId", 
                         "transactionId", transactionId));
     }
@@ -137,7 +140,7 @@ public class PublishingServiceRepository extends AbstractFactoryAndRepository {
                         "findByTimestampBefore", 
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
+                query = new QueryDefault<>(PublishedEvent.class,
                         "find");
             }
         }

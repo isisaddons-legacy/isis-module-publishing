@@ -16,8 +16,11 @@
  */
 package org.isisaddons.module.publishing.dom;
 
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 import javax.jdo.annotations.IdentityType;
+import org.isisaddons.module.publishing.PublishingModule;
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.Identifier;
 import org.apache.isis.applib.annotation.Action;
@@ -123,8 +126,38 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
 )
 public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransactionId {
 
-    public static enum State {
-        QUEUED, PROCESSED
+    public static abstract class PropertyDomainEvent<T> extends PublishingModule.PropertyDomainEvent<PublishedEvent, T> {
+        public PropertyDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public PropertyDomainEvent(final PublishedEvent source, final Identifier identifier, final T oldValue, final T newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
+    public static abstract class CollectionDomainEvent<T> extends PublishingModule.CollectionDomainEvent<PublishedEvent, T> {
+        public CollectionDomainEvent(final PublishedEvent source, final Identifier identifier, final org.apache.isis.applib.services.eventbus.CollectionDomainEvent.Of of) {
+            super(source, identifier, of);
+        }
+
+        public CollectionDomainEvent(final PublishedEvent source, final Identifier identifier, final org.apache.isis.applib.services.eventbus.CollectionDomainEvent.Of of, final T value) {
+            super(source, identifier, of, value);
+        }
+    }
+
+    public static abstract class ActionDomainEvent extends PublishingModule.ActionDomainEvent<PublishedEvent> {
+        public ActionDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public ActionDomainEvent(final PublishedEvent source, final Identifier identifier, final Object... arguments) {
+            super(source, identifier, arguments);
+        }
+
+        public ActionDomainEvent(final PublishedEvent source, final Identifier identifier, final List<Object> arguments) {
+            super(source, identifier, arguments);
+        }
     }
 
     // //////////////////////////////////////
@@ -132,7 +165,6 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     public PublishedEvent() {
         super(ChangeType.PUBLISHED_EVENT);
     }
-
 
     // //////////////////////////////////////
     // Identification
@@ -153,10 +185,21 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // user (property)
     // //////////////////////////////////////
 
+    public static class UserDomainEvent extends PropertyDomainEvent<String> {
+        public UserDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public UserDomainEvent(final PublishedEvent source, final Identifier identifier, final String oldValue, final String newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private String user;
     
     @javax.jdo.annotations.Column(allowsNull="false", length=50)
     @Property(
+            domainEvent = UserDomainEvent.class,
             hidden = Where.PARENTED_TABLES
     )
     @MemberOrder(name="Identifiers", sequence = "10")
@@ -173,11 +216,22 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // timestamp (property)
     // //////////////////////////////////////
 
+    public static class TimestampDomainEvent extends PropertyDomainEvent<java.sql.Timestamp> {
+        public TimestampDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public TimestampDomainEvent(final PublishedEvent source, final Identifier identifier, final Timestamp oldValue, final Timestamp newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private java.sql.Timestamp timestamp;
 
     @javax.jdo.annotations.Persistent
     @javax.jdo.annotations.Column(allowsNull="false")
     @Property(
+            domainEvent = TimestampDomainEvent.class,
             hidden = Where.PARENTED_TABLES
     )
     @MemberOrder(name="Identifiers", sequence = "20")
@@ -195,6 +249,16 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // transactionId
     // //////////////////////////////////////
 
+    public static class TransactionIdDomainEvent extends PropertyDomainEvent<UUID> {
+        public TransactionIdDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public TransactionIdDomainEvent(final PublishedEvent source, final Identifier identifier, final UUID oldValue, final UUID newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private UUID transactionId;
 
     /**
@@ -207,6 +271,7 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     @javax.jdo.annotations.PrimaryKey
     @javax.jdo.annotations.Column(allowsNull="false",length=JdoColumnLength.TRANSACTION_ID)
     @Property(
+            domainEvent = TransactionIdDomainEvent.class,
             hidden = Where.PARENTED_TABLES
     )
     @MemberOrder(name="Identifiers", sequence = "30")
@@ -225,6 +290,16 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // sequence
     // //////////////////////////////////////
 
+    public static class SequenceDomainEvent extends PropertyDomainEvent<Integer> {
+        public SequenceDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public SequenceDomainEvent(final PublishedEvent source, final Identifier identifier, final Integer oldValue, final Integer newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private int sequence;
 
     /**
@@ -235,6 +310,9 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
      * primary key.
      */
     @javax.jdo.annotations.PrimaryKey
+    @Property(
+            domainEvent = SequenceDomainEvent.class
+    )
     @MemberOrder(name="Identifiers", sequence = "40")
     public int getSequence() {
         return sequence;
@@ -249,6 +327,16 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // title
     // //////////////////////////////////////
 
+    public static class TitleDomainEvent extends PropertyDomainEvent<String> {
+        public TitleDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public TitleDomainEvent(final PublishedEvent source, final Identifier identifier, final String oldValue, final String newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private String title;
 
     /**
@@ -261,6 +349,7 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
      */
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.PublishedEvent.TITLE)
     @Property(
+            domainEvent = TitleDomainEvent.class,
             hidden = Where.EVERYWHERE
     )
     @Deprecated
@@ -277,9 +366,22 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // eventType (property)
     // //////////////////////////////////////
 
+    public static class EventTypeDomainEvent extends PropertyDomainEvent<EventType> {
+        public EventTypeDomainEvent(final PublishedEvent source, final Identifier identifier, final EventType oldValue, final EventType newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+
+        public EventTypeDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+    }
+
     private EventType eventType;
 
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.PublishedEvent.EVENT_TYPE)
+    @Property(
+            domainEvent = EventTypeDomainEvent.class
+    )
     @MemberOrder(name="Identifiers",sequence = "50")
     public EventType getEventType() {
         return eventType;
@@ -294,9 +396,23 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // targetClass (property)
     // //////////////////////////////////////
 
+    public static class TargetClassDomainEvent extends PropertyDomainEvent<String> {
+        public TargetClassDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public TargetClassDomainEvent(final PublishedEvent source, final Identifier identifier, final String oldValue, final String newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
+
     private String targetClass;
 
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.TARGET_CLASS)
+    @Property(
+            domainEvent = TargetClassDomainEvent.class
+    )
     @PropertyLayout(
             named = "Class",
             typicalLength = 30
@@ -314,13 +430,26 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // //////////////////////////////////////
     // targetAction (property)
     // //////////////////////////////////////
-    
+
+    public static class TargetActionDomainEvent extends PropertyDomainEvent<String> {
+        public TargetActionDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public TargetActionDomainEvent(final PublishedEvent source, final Identifier identifier, final String oldValue, final String newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private String targetAction;
     
     /**
      * Only populated for {@link EventType#ACTION_INVOCATION}
      */
     @javax.jdo.annotations.Column(allowsNull="true", length=JdoColumnLength.TARGET_ACTION)
+    @Property(
+            domainEvent = TargetActionDomainEvent.class
+    )
     @PropertyLayout(
             named = "Action",
             typicalLength = 30
@@ -340,9 +469,21 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // openTargetObject (action)
     // //////////////////////////////////////
 
-    
+    public static class TargetStrDomainEvent extends PropertyDomainEvent<String> {
+        public TargetStrDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public TargetStrDomainEvent(final PublishedEvent source, final Identifier identifier, final String oldValue, final String newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private String targetStr;
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.BOOKMARK, name="target")
+    @Property(
+            domainEvent = TargetStrDomainEvent.class
+    )
     @PropertyLayout(
             named = "Object"
     )
@@ -360,6 +501,16 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // memberIdentifier (property)
     // //////////////////////////////////////
 
+    public static class MemberIdentifierDomainEvent extends PropertyDomainEvent<String> {
+        public MemberIdentifierDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public MemberIdentifierDomainEvent(final PublishedEvent source, final Identifier identifier, final String oldValue, final String newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     private String memberIdentifier;
     
     /**
@@ -376,6 +527,9 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
      * properties rather than simply just actions.
      */
     @javax.jdo.annotations.Column(allowsNull="true", length=JdoColumnLength.MEMBER_IDENTIFIER)
+    @Property(
+            domainEvent = MemberIdentifierDomainEvent.class
+    )
     @PropertyLayout(
             hidden = Where.ALL_TABLES,
             typicalLength = 60
@@ -395,9 +549,26 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // state (property)
     // //////////////////////////////////////
 
+    public static class StateDomainEvent extends PropertyDomainEvent<State> {
+        public StateDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public StateDomainEvent(final PublishedEvent source, final Identifier identifier, final State oldValue, final State newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
+    public static enum State {
+        QUEUED, PROCESSED
+    }
+
     private State state;
 
     @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.PublishedEvent.STATE)
+    @Property(
+            domainEvent = StateDomainEvent.class
+    )
     @MemberOrder(name="State", sequence = "30")
     public State getState() {
         return state;
@@ -417,8 +588,19 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     // serializedForm (derived property)
     // //////////////////////////////////////
 
+    public static class SerializedFormDomainEvent extends PropertyDomainEvent<String> {
+        public SerializedFormDomainEvent(final PublishedEvent source, final Identifier identifier) {
+            super(source, identifier);
+        }
+
+        public SerializedFormDomainEvent(final PublishedEvent source, final Identifier identifier, final String oldValue, final String newValue) {
+            super(source, identifier, oldValue, newValue);
+        }
+    }
+
     @javax.jdo.annotations.NotPersistent
     @Property(
+            domainEvent = SerializedFormDomainEvent.class,
             notPersisted = true
     )
     @PropertyLayout(
@@ -470,12 +652,17 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
 
     // //////////////////////////////////////
     // processed (action)
-    // reQueue   (action)
-    // delete    (action)
     // //////////////////////////////////////
+
+    public static class ProcessedDomainEvent extends ActionDomainEvent {
+        public ProcessedDomainEvent(final PublishedEvent source, final Identifier identifier, final Object... arguments) {
+            super(source, identifier, arguments);
+        }
+    }
 
 
     @Action(
+            domainEvent = ProcessedDomainEvent.class,
             invokeOn = InvokeOn.OBJECT_AND_COLLECTION,
             semantics = SemanticsOf.IDEMPOTENT
     )
@@ -485,7 +672,18 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     }
 
 
+    // //////////////////////////////////////
+    // reQueue   (action)
+    // //////////////////////////////////////
+
+    public static class ReQueueDomainEvent extends ActionDomainEvent {
+        public ReQueueDomainEvent(final PublishedEvent source, final Identifier identifier, final Object... arguments) {
+            super(source, identifier, arguments);
+        }
+    }
+
     @Action(
+            domainEvent = ReQueueDomainEvent.class,
             invokeOn = InvokeOn.OBJECT_AND_COLLECTION,
             semantics = SemanticsOf.IDEMPOTENT
     )
@@ -494,7 +692,18 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
         return setStateAndReturn(State.QUEUED);
     }
 
+    // //////////////////////////////////////
+    // delete    (action)
+    // //////////////////////////////////////
+
+    public static class DeleteDomainEvent extends ActionDomainEvent {
+        public DeleteDomainEvent(final PublishedEvent source, final Identifier identifier, final Object... arguments) {
+            super(source, identifier, arguments);
+        }
+    }
+
     @Action(
+            domainEvent = DeleteDomainEvent.class,
             invokeOn = InvokeOn.OBJECT_AND_COLLECTION,
             semantics = SemanticsOf.IDEMPOTENT
     )
@@ -504,7 +713,6 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     }
     
 
-    
     // //////////////////////////////////////
     // toString
     // //////////////////////////////////////

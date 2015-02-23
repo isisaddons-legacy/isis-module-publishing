@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.apache.isis.applib.AbstractService;
 import org.apache.isis.applib.annotation.DomainService;
+import org.apache.isis.applib.annotation.NatureOfService;
 import org.apache.isis.applib.annotation.Programmatic;
 import org.apache.isis.applib.services.command.CommandContext;
 import org.apache.isis.applib.services.publish.EventMetadata;
@@ -31,8 +32,12 @@ import org.apache.isis.applib.services.publish.EventSerializer;
  * An implementation of {@link org.apache.isis.applib.services.publish.PublishingService} that persists events as
  * entities into a JDO-backed database.
  */
-@DomainService
+@DomainService(
+        nature = NatureOfService.DOMAIN
+)
 public class PublishingService extends AbstractService implements org.apache.isis.applib.services.publish.PublishingService {
+
+    // //////////////////////////////////////
 
     private static final String SERIALIZED_FORM_LOCAL_KEY = "datanucleus.PublishingService.serializedForm";
     private final static String SERIALIZED_FORM_KEY = "isis.persistor." + SERIALIZED_FORM_LOCAL_KEY;

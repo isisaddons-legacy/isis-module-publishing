@@ -44,7 +44,9 @@ import org.apache.isis.viewer.restfulobjects.rendering.domainobjects.DomainObjec
  * This implementation is automatically registered.  If an alternative implementation is required, explicitly register
  * that implementation in <code>isis.properties</code> and it will be used instead.
  */
-@DomainService(nature = NatureOfService.DOMAIN)
+@DomainService(
+        nature = NatureOfService.DOMAIN
+)
 public class RestfulObjectsSpecEventSerializer implements EventSerializer {
 
     private final static String BASE_URL_KEY = "isis.viewer.restfulobjects.RestfulObjectsSpecEventSerializer.baseUrl";
