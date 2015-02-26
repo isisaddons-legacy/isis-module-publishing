@@ -195,6 +195,7 @@ To use "out-of-the-box":
 
 * update your classpath by adding this dependency in your webapp project's `pom.xml`:
 
+<pre> </pre>
     <dependency>
         <groupId>org.isisaddons.module.publishing</groupId>
         <artifactId>isis-module-publishing-dom</artifactId>
@@ -205,6 +206,7 @@ To use "out-of-the-box":
   implementation of the `EventSerializer` API), then also update your classpath to add this dependency in your 
   webapp project's `pom.xml`:
 
+<pre> </pre>
     <dependency>
         <groupId>org.apache.isis.core</groupId>
         <artifactId>isis-core-viewer-restfulobjects-rendering</artifactId>
@@ -234,6 +236,7 @@ If you want to use the current `-SNAPSHOT`, then the steps are the same as above
 
 * add the repository definition to pick up the most recent snapshot (we use the Cloudbees continuous integration service).  We suggest defining the repository in a `<profile>`:
 
+<pre> </pre>
     <profile>
         <id>cloudbees-snapshots</id>
         <activation>
