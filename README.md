@@ -195,23 +195,25 @@ To use "out-of-the-box":
 
 * update your classpath by adding this dependency in your webapp project's `pom.xml`:
 
-<pre> </pre>
-    <dependency>
-        <groupId>org.isisaddons.module.publishing</groupId>
-        <artifactId>isis-module-publishing-dom</artifactId>
-        <version>1.8.0</version>
-    </dependency>
+<pre>
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.isisaddons.module.publishing&lt;/groupId&gt;
+        &lt;artifactId&gt;isis-module-publishing-dom&lt;/artifactId&gt;
+        &lt;version&gt;1.8.0&lt;/version&gt;
+    &lt;/dependency&gt;
+</pre>
 
 * assuming you are using the provided `RestfulObjectsSpecEventSerializer` (that is, haven't written your own 
   implementation of the `EventSerializer` API), then also update your classpath to add this dependency in your 
   webapp project's `pom.xml`:
 
-<pre> </pre>
-    <dependency>
-        <groupId>org.apache.isis.core</groupId>
-        <artifactId>isis-core-viewer-restfulobjects-rendering</artifactId>
-        <version>1.8.0</version>
-    </dependency>
+<pre>
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.isis.core&lt;/groupId&gt;
+        &lt;artifactId&gt;isis-core-viewer-restfulobjects-rendering&lt;/artifactId&gt;
+        &lt;version&gt;1.8.0&lt;/version&gt;
+    &lt;/dependency&gt;
+</pre>
 
   Check for later releases by searching [Maven Central Repo](http://search.maven.org/#search%7Cga%7C1%7Cisis-module-publishing-dom).
   
@@ -236,25 +238,26 @@ If you want to use the current `-SNAPSHOT`, then the steps are the same as above
 
 * add the repository definition to pick up the most recent snapshot (we use the Cloudbees continuous integration service).  We suggest defining the repository in a `<profile>`:
 
-<pre> </pre>
-    <profile>
-        <id>cloudbees-snapshots</id>
-        <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-        <repositories>
-            <repository>
-                <id>snapshots-repo</id>
-                <url>http://repository-estatio.forge.cloudbees.com/snapshot/</url>
-                <releases>
-                    <enabled>false</enabled>
-                </releases>
-                <snapshots>
-                    <enabled>true</enabled>
-                </snapshots>
-            </repository>
-        </repositories>
-    </profile>
+<pre>
+    &lt;profile&gt;
+        &lt;id&gt;cloudbees-snapshots&lt;/id&gt;
+        &lt;activation&gt;
+            &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+        &lt;/activation&gt;
+        &lt;repositories&gt;
+            &lt;repository&gt;
+                &lt;id&gt;snapshots-repo&lt;/id&gt;
+                &lt;url&gt;http://repository-estatio.forge.cloudbees.com/snapshot/&lt;/url&gt;
+                &lt;releases&gt;
+                    &lt;enabled&gt;false&lt;/enabled&gt;
+                &lt;/releases&gt;
+                &lt;snapshots&gt;
+                    &lt;enabled&gt;true&lt;/enabled&gt;
+                &lt;/snapshots&gt;
+            &lt;/repository&gt;
+        &lt;/repositories&gt;
+    &lt;/profile&gt;
+</pre>
 
 
 #### Forking the repo ####
