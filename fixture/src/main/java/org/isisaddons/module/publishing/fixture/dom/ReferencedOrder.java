@@ -29,9 +29,13 @@ import org.apache.isis.applib.util.ObjectContracts;
 @javax.jdo.annotations.Version(
         strategy=VersionStrategy.VERSION_NUMBER, 
         column="version")
-@ObjectType("ORDER")
-@PublishedObject
-@Bookmarkable
+@DomainObject(
+        objectType = "ORDER",
+        publishing = Publishing.ENABLED // using default payload factory
+)
+@DomainObjectLayout(
+        bookmarking = BookmarkPolicy.AS_ROOT
+)
 public class ReferencedOrder implements Comparable<ReferencedOrder> {
 
     //region > name (property)
@@ -55,7 +59,7 @@ public class ReferencedOrder implements Comparable<ReferencedOrder> {
     //region > compareTo
 
     @Override
-    public int compareTo(ReferencedOrder other) {
+    public int compareTo(final ReferencedOrder other) {
         return ObjectContracts.compare(this, other, "name");
     }
 

@@ -29,9 +29,13 @@ import org.apache.isis.applib.util.ObjectContracts;
 @javax.jdo.annotations.Version(
         strategy=VersionStrategy.VERSION_NUMBER, 
         column="version")
-@ObjectType("UNPUBLISHED")
-@PublishedObject
-@Bookmarkable
+@DomainObject(
+        objectType = "UNPUBLISHED",
+        publishing = Publishing.ENABLED // ? TODO: review: is this right for what we're trying to demonstrate
+)
+@DomainObjectLayout(
+        bookmarking = BookmarkPolicy.AS_ROOT
+)
 public class SomeUnpublishedObject implements Comparable<SomeUnpublishedObject> {
 
     //region > name (property)
@@ -55,7 +59,7 @@ public class SomeUnpublishedObject implements Comparable<SomeUnpublishedObject> 
     //region > compareTo
 
     @Override
-    public int compareTo(SomeUnpublishedObject other) {
+    public int compareTo(final SomeUnpublishedObject other) {
         return ObjectContracts.compare(this, other, "name");
     }
 

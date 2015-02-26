@@ -17,6 +17,7 @@
 package org.isisaddons.module.publishing.dom;
 
 import java.util.List;
+import java.util.UUID;
 import org.isisaddons.module.publishing.PublishingModule;
 import org.joda.time.LocalDate;
 import org.apache.isis.applib.AbstractService;
@@ -77,6 +78,27 @@ public class PublishingServiceMenu extends AbstractService {
 
     // //////////////////////////////////////
 
+    public static class FindPublishedEventsByTransactionIdDomainEvent extends ActionDomainEvent {
+        public FindPublishedEventsByTransactionIdDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
+            super(source, identifier, args);
+        }
+    }
+
+    @Action(
+            domainEvent = FindPublishedEventsByTransactionIdDomainEvent.class,
+            semantics = SemanticsOf.SAFE
+    )
+    @ActionLayout(
+            cssClassFa = "fa-crosshairs"
+    )
+    @MemberOrder(sequence="20")
+    public List<PublishedEvent> findPublishedEventsByTransactionId(UUID transactionId) {
+        return publishingServiceRepository.findByTransactionId(transactionId);
+    }
+
+
+    // //////////////////////////////////////
+
     public static class FindPublishedEventsDomainEvent extends ActionDomainEvent {
         public FindPublishedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
             super(source, identifier, args);
@@ -90,7 +112,7 @@ public class PublishingServiceMenu extends AbstractService {
     @ActionLayout(
             cssClassFa = "fa-search"
     )
-    @MemberOrder(sequence="20")
+    @MemberOrder(sequence="30")
     public List<PublishedEvent> findPublishedEvents(
             @Parameter(optionality= Optionality.OPTIONAL)
             @ParameterLayout(named="From")
@@ -112,6 +134,7 @@ public class PublishingServiceMenu extends AbstractService {
 
     // //////////////////////////////////////
 
+
     public static class PurgeProcessedEventsDomainEvent extends ActionDomainEvent {
         public PurgeProcessedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
             super(source, identifier, args);
@@ -125,7 +148,7 @@ public class PublishingServiceMenu extends AbstractService {
     @ActionLayout(
             cssClassFa = "fa-trash"
     )
-    @MemberOrder(sequence="30")
+    @MemberOrder(sequence="40")
     public void purgeProcessedEvents() {
         publishingServiceRepository.purgeProcessed();
     }
@@ -149,7 +172,7 @@ public class PublishingServiceMenu extends AbstractService {
     @ActionLayout(
             cssClassFa = "fa-list"
     )
-    @MemberOrder(sequence="40")
+    @MemberOrder(sequence="50")
     public List<PublishedEvent> allProcessedEvents() {
         return publishingServiceRepository.findProcessed();
     }

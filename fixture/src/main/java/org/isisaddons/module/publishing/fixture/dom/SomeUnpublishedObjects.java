@@ -18,11 +18,13 @@ package org.isisaddons.module.publishing.fixture.dom;
 
 import java.util.List;
 import org.apache.isis.applib.DomainObjectContainer;
-import org.apache.isis.applib.annotation.*;
-import org.apache.isis.applib.annotation.ActionSemantics.Of;
+import org.apache.isis.applib.annotation.DomainService;
+import org.apache.isis.applib.annotation.NatureOfService;
 
-@Hidden
-@DomainService(menuOrder = "10", repositoryFor = SomeUnpublishedObject.class)
+@DomainService(
+        nature = NatureOfService.DOMAIN,
+        repositoryFor = SomeUnpublishedObject.class
+)
 public class SomeUnpublishedObjects {
 
     //region > identification in the UI
@@ -39,10 +41,6 @@ public class SomeUnpublishedObjects {
 
     //region > listAll (action)
 
-    @Hidden
-    @Bookmarkable
-    @ActionSemantics(Of.SAFE)
-    @MemberOrder(sequence = "1")
     public List<SomeUnpublishedObject> listAll() {
         return container.allInstances(SomeUnpublishedObject.class);
     }
@@ -51,9 +49,8 @@ public class SomeUnpublishedObjects {
 
     //region > create (action)
 
-    @MemberOrder(sequence = "2")
     public SomeUnpublishedObject create(
-            final @Named("Name") String name) {
+            final String name) {
         final SomeUnpublishedObject obj = container.newTransientInstance(SomeUnpublishedObject.class);
         obj.setName(name);
         container.persistIfNotAlready(obj);

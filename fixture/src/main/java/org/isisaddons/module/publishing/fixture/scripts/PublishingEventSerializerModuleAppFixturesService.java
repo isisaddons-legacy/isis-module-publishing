@@ -17,10 +17,11 @@
 package org.isisaddons.module.publishing.fixture.scripts;
 
 import java.util.List;
+import org.apache.isis.applib.annotation.Action;
 import org.apache.isis.applib.annotation.DomainService;
+import org.apache.isis.applib.annotation.DomainServiceLayout;
 import org.apache.isis.applib.annotation.MemberOrder;
-import org.apache.isis.applib.annotation.Named;
-import org.apache.isis.applib.annotation.Prototype;
+import org.apache.isis.applib.annotation.RestrictTo;
 import org.apache.isis.applib.fixturescripts.FixtureResult;
 import org.apache.isis.applib.fixturescripts.FixtureScript;
 import org.apache.isis.applib.fixturescripts.FixtureScripts;
@@ -29,12 +30,16 @@ import org.apache.isis.applib.fixturescripts.SimpleFixtureScript;
 /**
  * Enables fixtures to be installed from the application.
  */
-@Named("Prototyping")
-@DomainService(menuOrder = "90")
+@DomainServiceLayout(
+        named = "Prototyping",
+        menuBar = DomainServiceLayout.MenuBar.SECONDARY,
+        menuOrder = "499"
+)
+@DomainService
 public class PublishingEventSerializerModuleAppFixturesService extends FixtureScripts {
 
     public PublishingEventSerializerModuleAppFixturesService() {
-        super("org.isisaddons.module.publishing.fixture.scripts");
+        super(PublishingEventSerializerModuleAppFixturesService.class.getPackage().getName());
     }
 
     /**
@@ -54,7 +59,9 @@ public class PublishingEventSerializerModuleAppFixturesService extends FixtureSc
 
     // //////////////////////////////////////
 
-    @Prototype
+    @Action(
+            restrictTo = RestrictTo.PROTOTYPING
+    )
     @MemberOrder(sequence="20")
     public Object installFixturesAndReturnFirst() {
         final List<FixtureResult> run = findFixtureScriptFor(PublishingEventSerializerModuleAppSetUpFixture.class).run(null);

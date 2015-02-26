@@ -20,10 +20,27 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.jdo.annotations.*;
+import javax.inject.Named;
+import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Join;
+import javax.jdo.annotations.Order;
+import javax.jdo.annotations.VersionStrategy;
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.Identifier;
-import org.apache.isis.applib.annotation.*;
+import org.apache.isis.applib.annotation.Action;
+import org.apache.isis.applib.annotation.DomainObject;
+import org.apache.isis.applib.annotation.MemberOrder;
+import org.apache.isis.applib.annotation.Optionality;
+import org.apache.isis.applib.annotation.Parameter;
+import org.apache.isis.applib.annotation.ParameterLayout;
+import org.apache.isis.applib.annotation.Publishing;
+import org.apache.isis.applib.annotation.PublishingChangeKind;
+import org.apache.isis.applib.annotation.PublishingPayloadFactoryForAction;
+import org.apache.isis.applib.annotation.PublishingPayloadFactoryForObject;
+import org.apache.isis.applib.annotation.SemanticsOf;
+import org.apache.isis.applib.annotation.Title;
 import org.apache.isis.applib.services.publish.EventPayload;
 import org.apache.isis.applib.services.publish.EventPayloadForActionInvocation;
 import org.apache.isis.applib.services.publish.EventPayloadForObjectChanged;
@@ -36,16 +53,23 @@ import org.apache.isis.applib.util.ObjectContracts;
 @javax.jdo.annotations.Version(
         strategy=VersionStrategy.VERSION_NUMBER, 
         column="version")
-@ObjectType("PUBLISHEDCUSTOMER")
-@Bookmarkable
-@PublishedObject(value = PublishedCustomer.ObjectChangedEventPayloadFactory.class)
+@DomainObject(
+        objectType = "PUBLISHEDCUSTOMER",
+        publishing = Publishing.ENABLED,
+        publishingPayloadFactory = PublishedCustomer.ObjectChangedEventPayloadFactory.class
+)
 public class PublishedCustomer implements Comparable<PublishedCustomer> {
 
-    public static class ObjectChangedEventPayloadFactory implements PublishedObject.PayloadFactory {
+    public static class ObjectChangedEventPayloadFactory implements PublishingPayloadFactoryForObject {
+        @Override
+        public EventPayload payloadFor(final Object changedObject, final PublishingChangeKind publishingChangeKind) {
+            return new PublishedCustomerPayload((PublishedCustomer) changedObject);
+        }
+
         public static class PublishedCustomerPayload
                 extends EventPayloadForObjectChanged<PublishedCustomer> {
 
-            public PublishedCustomerPayload(PublishedCustomer changed) {
+            public PublishedCustomerPayload(final PublishedCustomer changed) {
                 super(changed);
             }
 
@@ -62,14 +86,9 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
                 return getChanged().getOrders();
             }
         }
-
-        @Override
-        public EventPayload payloadFor(Object changedObject, PublishedObject.ChangeKind changeKind) {
-            return new PublishedCustomerPayload((PublishedCustomer) changedObject);
-        }
     }
 
-    public static class UpdateAddressEventPayloadFactory implements PublishedAction.PayloadFactory {
+    public static class UpdateAddressEventPayloadFactory implements PublishingPayloadFactoryForAction {
 
         public static class UpdateAddressEventPayload
                 extends EventPayloadForActionInvocation<PublishedCustomer> {
@@ -84,7 +103,7 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
         }
 
         @Override
-        public EventPayload payloadFor(Identifier actionIdentifier, Object target, List<Object> arguments, Object result) {
+        public EventPayload payloadFor(final Identifier actionIdentifier, final Object target, final List<Object> arguments, final Object result) {
             return new UpdateAddressEventPayload(actionIdentifier, (PublishedCustomer) target, arguments, result);
         }
     }
@@ -120,12 +139,19 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     //endregion
 
     //region > updateAddress (published action), clearAddress (action)
-    @PublishedAction(value = PublishedCustomer.UpdateAddressEventPayloadFactory.class)
-    @ActionSemantics(ActionSemantics.Of.IDEMPOTENT)
+    @Action(
+            semantics = SemanticsOf.IDEMPOTENT,
+            publishing = Publishing.ENABLED,
+            publishingPayloadFactory = PublishedCustomer.UpdateAddressEventPayloadFactory.class
+    )
     public PublishedCustomer updateAddress(
-            final @Named("Line 1") String line1,
-            final @Named("Line 2") @Optional String line2,
-            final @Named("Town") String town) {
+            @ParameterLayout(named="Line 1")
+            final String line1,
+            @Parameter(optionality = Optionality.OPTIONAL)
+            @ParameterLayout(named="Line 2")
+            final String line2,
+            @ParameterLayout(named="Town")
+            final String town) {
         ReferencedAddress address = getAddress();
         if(address == null) {
             address = container.newTransientInstance(ReferencedAddress.class);
@@ -149,7 +175,9 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     }
 
     @Named("Clear")
-    @ActionSemantics(ActionSemantics.Of.IDEMPOTENT)
+    @Action(
+            semantics = SemanticsOf.IDEMPOTENT
+    )
     public PublishedCustomer resetAddress(
             final @Named("Are you sure?") boolean areYouSure) {
         setAddress(null);
@@ -165,7 +193,7 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     //region > orders (collection)
     @Join
     @Element(dependent = "false")
-    private SortedSet<ReferencedOrder> orders = new TreeSet<ReferencedOrder>();
+    private SortedSet<ReferencedOrder> orders = new TreeSet<>();
 
     @MemberOrder(sequence = "1")
     public SortedSet<ReferencedOrder> getOrders() {
@@ -178,8 +206,12 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     //endregion
 
     //region > addOrder (action)
-    @PublishedAction // using the default payload factory
-    public PublishedCustomer addOrder(final @Named("Name") String name) {
+    @Action(
+            publishing = Publishing.ENABLED // using the default payload factory
+    )
+    public PublishedCustomer addOrder(
+            @ParameterLayout(named="Name")
+            final String name) {
         final ReferencedOrder order = container.newTransientInstance(ReferencedOrder.class);
         order.setName(name);
         getOrders().add(order);
@@ -189,7 +221,9 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     //endregion
 
     //region > removeOrder (action)
-    @ActionSemantics(ActionSemantics.Of.IDEMPOTENT)
+    @Action(
+            semantics = SemanticsOf.IDEMPOTENT
+    )
     public PublishedCustomer removeOrder(final Order order) {
         getOrders().remove(order);
         container.removeIfNotAlready(order);
@@ -204,7 +238,7 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     //region > compareTo
 
     @Override
-    public int compareTo(PublishedCustomer other) {
+    public int compareTo(final PublishedCustomer other) {
         return ObjectContracts.compare(this, other, "name");
     }
 

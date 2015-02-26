@@ -22,45 +22,81 @@ import org.isisaddons.module.publishing.dom.PublishedEvent;
 import org.isisaddons.module.publishing.dom.PublishingServiceRepository;
 import org.isisaddons.module.publishing.fixture.dom.PublishedCustomer;
 import org.isisaddons.module.publishing.fixture.dom.ReferencedAddress;
+import org.joda.time.LocalDate;
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.services.bookmark.Bookmark;
 import org.apache.isis.applib.services.bookmark.BookmarkService;
 
-@DomainService(menuOrder = "90")
+@DomainService(
+        nature = NatureOfService.VIEW_CONTRIBUTIONS_ONLY
+)
+@DomainServiceLayout(
+        menuOrder = "90"
+)
 public class PublishingEventsContributions {
 
-    @NotInServiceMenu
-    @NotContributed(NotContributed.As.ACTION)// ie contributed as collection
-    @ActionSemantics(ActionSemantics.Of.SAFE)
+    @Action(
+            semantics = SemanticsOf.SAFE
+    )
+    @ActionLayout(
+            contributed = Contributed.AS_ASSOCIATION
+    )
     public List<PublishedEvent> publishedEvents(
             final PublishedCustomer publishedCustomer) {
         return publishedEventsFor(publishedCustomer);
     }
 
-    @NotInServiceMenu
-    @NotContributed(NotContributed.As.ACTION)// ie contributed as collection
-    @ActionSemantics(ActionSemantics.Of.SAFE)
+    // //////////////////////////////////////
+
+    @Action(
+            semantics = SemanticsOf.SAFE
+    )
+    @ActionLayout(
+            contributed = Contributed.AS_ASSOCIATION
+    )
     public List<PublishedEvent> publishedEvents(
             final ReferencedAddress referencedAddress) {
         return publishedEventsFor(referencedAddress);
     }
 
-    private List<PublishedEvent> publishedEventsFor(Object domainObject) {
+    private List<PublishedEvent> publishedEventsFor(final Object domainObject) {
         final Bookmark bookmark = bookmarkService.bookmarkFor(domainObject);
         return publishingServiceRepository.findByTargetAndFromAndTo(bookmark, null, null);
     }
 
-    @NotInServiceMenu
-    @NotContributed(NotContributed.As.ASSOCIATION)// ie contributed as action
+    @Action(
+            semantics = SemanticsOf.SAFE
+    )
+    @ActionLayout(
+            named = "Find between",
+            contributed = Contributed.AS_ACTION,
+            cssClassFa = "fa-search"
+    )
+    @MemberOrder(name = "publishedEvents", sequence = "1")
+    public List<PublishedEvent> publishedEventsBetween(final Object domainObject, final LocalDate from, final LocalDate to) {
+        final Bookmark bookmark = bookmarkService.bookmarkFor(domainObject);
+        return publishingServiceRepository.findByTargetAndFromAndTo(bookmark, from, to);
+    }
+
+    // //////////////////////////////////////
+
+    @Action(
+            semantics = SemanticsOf.IDEMPOTENT
+    )
+    @ActionLayout(
+            contributed = Contributed.AS_ACTION
+    )
     public PublishedCustomer purgeEvents(
             final PublishedCustomer publishedCustomer) {
         final List<PublishedEvent> publishedEvents = publishedEvents(publishedCustomer);
-        for (PublishedEvent publishedEvent : publishedEvents) {
+        for (final PublishedEvent publishedEvent : publishedEvents) {
             container.removeIfNotAlready(publishedEvent);
         }
         return publishedCustomer;
     }
+
+    // //////////////////////////////////////
 
 
     @Inject

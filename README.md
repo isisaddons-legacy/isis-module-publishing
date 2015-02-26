@@ -51,11 +51,14 @@ published events as a contributed collection.  The fixture setup results in one 
 
 The customer's `updateAddress` action is a _published_ action:
  
-    @PublishedAction(value = PublishedCustomer.UpdateAddressEventPayloadFactory.class)
+    @Action(
+            publishing = Publishing.ENABLED,
+            publishingPayloadFactory = PublishedCustomer.UpdateAddressEventPayloadFactory.class
+    )
     public PublishedCustomer updateAddress(
-            final @Named("Line 1") String line1,
-            final @Named("Line 2") @Optional String line2,
-            final @Named("Town") String town) {
+            @ParameterLayout(named="Line 1") final String line1,
+            @ParameterLayout(named="Line 2") @Parameter(optionality = Optionality.OPTIONAL) final String line2,
+            @ParameterLayout(named="Town") final String town) {
         ReferencedAddress address = getAddress();
         if(address == null) {
             address = container.newTransientInstance(ReferencedAddress.class);
@@ -83,7 +86,9 @@ class specified in the `@PublishedAction` annotation.
 
 In addition, the `ReferencedAddress` entity is also a published object:
 
-    @PublishedObject // using the default payload factory
+    @DomainObject(
+            publishing = Publishing.ENABLED // using the default payload factory
+    )
     public class ReferencedAddress ... { ... }
 
 This means that as well as raising and persisting the action invocation event, a separate event is raised and persisted
@@ -100,12 +105,19 @@ per the [Isis Addons Command](http://github.com/isisaddons/isis-module-command) 
 
 Changes to the customer are also published:
 
-    @PublishedObject(value = PublishedCustomer.ObjectChangedEventPayloadFactory.class)
+    @DomainObject(
+            publishing = Publishing.ENABLED,
+            publishingPayloadFactory = PublishedCustomer.ObjectChangedEventPayloadFactory.class
+    )
     public class PublishedCustomer ... { ... }
 
 In this case a custom payload factory is specified:
 
-    public static class ObjectChangedEventPayloadFactory implements PublishedObject.PayloadFactory {
+    public static class ObjectChangedEventPayloadFactory implements PublishingPayloadFactoryForObject {
+        @Override
+        public EventPayload payloadFor(final Object changedObject, final PublishingChangeKind publishingChangeKind) {
+            return new PublishedCustomerPayload((PublishedCustomer) changedObject);
+        }
         public static class PublishedCustomerPayload extends EventPayloadForObjectChanged<PublishedCustomer> {
 
             public PublishedCustomerPayload(PublishedCustomer changed) { super(changed); }
@@ -120,10 +132,6 @@ In this case a custom payload factory is specified:
             public SortedSet<ReferencedOrder> getOrders() {
                 return getChanged().getOrders();
             }
-        }
-        @Override
-        public EventPayload payloadFor(Object changedObject, PublishedObject.ChangeKind changeKind) {
-            return new PublishedCustomerPayload((PublishedCustomer) changedObject);
         }
     }
 
@@ -187,25 +195,21 @@ To use "out-of-the-box":
 
 * update your classpath by adding this dependency in your webapp project's `pom.xml`:
 
-<pre>
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.isisaddons.module.publishing&lt;/groupId&gt;
-        &lt;artifactId&gt;isis-module-publishing-dom&lt;/artifactId&gt;
-        &lt;version&gt;1.6.0&lt;/version&gt;
-    &lt;/dependency&gt;
-</pre>
+    <dependency>
+        <groupId>org.isisaddons.module.publishing</groupId>
+        <artifactId>isis-module-publishing-dom</artifactId>
+        <version>1.8.0</version>
+    </dependency>
 
 * assuming you are using the provided `RestfulObjectsSpecEventSerializer` (that is, haven't written your own 
   implementation of the `EventSerializer` API), then also update your classpath to add this dependency in your 
   webapp project's `pom.xml`:
 
-<pre>
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.isis.core&lt;/groupId&gt;
-        &lt;artifactId&gt;isis-core-viewer-restfulobjects-rendering&lt;/artifactId&gt;
-        &lt;version&gt;1.7.0&lt;/version&gt;
-    &lt;/dependency&gt;
-</pre>
+    <dependency>
+        <groupId>org.apache.isis.core</groupId>
+        <artifactId>isis-core-viewer-restfulobjects-rendering</artifactId>
+        <version>1.8.0</version>
+    </dependency>
 
   Check for later releases by searching [Maven Central Repo](http://search.maven.org/#search%7Cga%7C1%7Cisis-module-publishing-dom).
   
@@ -226,32 +230,28 @@ If you want to use the current `-SNAPSHOT`, then the steps are the same as above
 
 * when updating the classpath, specify the appropriate -SNAPSHOT version:
 
-<pre>
-    &lt;version&gt;1.8.0-SNAPSHOT&lt;/version&gt;
-</pre>
+    <version>1.9.0-SNAPSHOT</version>
 
 * add the repository definition to pick up the most recent snapshot (we use the Cloudbees continuous integration service).  We suggest defining the repository in a `<profile>`:
 
-<pre>
-    &lt;profile&gt;
-        &lt;id&gt;cloudbees-snapshots&lt;/id&gt;
-        &lt;activation&gt;
-            &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
-        &lt;/activation&gt;
-        &lt;repositories&gt;
-            &lt;repository&gt;
-                &lt;id&gt;snapshots-repo&lt;/id&gt;
-                &lt;url&gt;http://repository-estatio.forge.cloudbees.com/snapshot/&lt;/url&gt;
-                &lt;releases&gt;
-                    &lt;enabled&gt;false&lt;/enabled&gt;
-                &lt;/releases&gt;
-                &lt;snapshots&gt;
-                    &lt;enabled&gt;true&lt;/enabled&gt;
-                &lt;/snapshots&gt;
-            &lt;/repository&gt;
-        &lt;/repositories&gt;
-    &lt;/profile&gt;
-</pre>
+    <profile>
+        <id>cloudbees-snapshots</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <repositories>
+            <repository>
+                <id>snapshots-repo</id>
+                <url>http://repository-estatio.forge.cloudbees.com/snapshot/</url>
+                <releases>
+                    <enabled>false</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
+        </repositories>
+    </profile>
 
 
 #### Forking the repo ####
@@ -357,7 +357,7 @@ domain services:
 * `PublishingServiceRepository` provides the ability to search for persisted (`PublishedEvent`) events.  None of its
   actions are visible in the user interface (they are all `@Programmatic`).
   
-* (In 1.8.0-SNAPSHOT, the) `PublishingServiceMenu` provides actions to search for `PublishedEvent`s, underneath an 'Activity' menu on the
+* The`PublishingServiceMenu` provides actions to search for `PublishedEvent`s, underneath an 'Activity' menu on the
 secondary menu bar.
 
 * `PublishingServiceContributions` provides the `publishedEvents` contributed collection to the `HasTransactionId`
@@ -369,7 +369,7 @@ secondary menu bar.
 In 1.7.0, it is necessary to explicitly register `PublishingServiceContributions` in `isis.properties`, the
 rationale being that this service contributes functionality that appears in the user interface.
 
-In 1.8.0-SNAPSHOT the above policy is reversed: the  `PublishingServiceMenu` and `PublishingServiceContributions`
+In 1.8.0 the above policy is reversed: the  `PublishingServiceMenu` and `PublishingServiceContributions`
 services are both automatically registered, and both provide functionality that will appear in the user interface.
 If this is not required, then either use security permissions or write a vetoing subscriber on the event bus to hide
 this functionality, eg:
@@ -417,6 +417,7 @@ Finally, Dan Haywood's [camel-isis-pubsubjdo](https://github.com/danhaywood/came
 
 ## Change Log ##
 
+* `1.8.0` - Released against Isis 1.8.0.
 * `1.7.0` - Released against Isis 1.7.0.
 * `1.6.0` - re-released as part of isisaddons, with classes under package `org.isisaddons.module.publishing`
 
@@ -425,7 +426,7 @@ Finally, Dan Haywood's [camel-isis-pubsubjdo](https://github.com/danhaywood/came
  
 #### License ####
 
-    Copyright 2013,2014 Dan Haywood
+    Copyright 2013~2015 Dan Haywood
 
     Licensed under the Apache License, Version 2.0 (the
     "License"); you may not use this file except in compliance

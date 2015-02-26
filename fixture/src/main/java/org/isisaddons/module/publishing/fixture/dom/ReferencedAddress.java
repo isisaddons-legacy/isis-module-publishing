@@ -19,7 +19,12 @@ package org.isisaddons.module.publishing.fixture.dom;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.VersionStrategy;
 import org.apache.isis.applib.DomainObjectContainer;
-import org.apache.isis.applib.annotation.*;
+import org.apache.isis.applib.annotation.BookmarkPolicy;
+import org.apache.isis.applib.annotation.DomainObject;
+import org.apache.isis.applib.annotation.DomainObjectLayout;
+import org.apache.isis.applib.annotation.MemberOrder;
+import org.apache.isis.applib.annotation.Publishing;
+import org.apache.isis.applib.annotation.Title;
 import org.apache.isis.applib.util.ObjectContracts;
 
 @javax.jdo.annotations.PersistenceCapable(identityType=IdentityType.DATASTORE)
@@ -29,9 +34,13 @@ import org.apache.isis.applib.util.ObjectContracts;
 @javax.jdo.annotations.Version(
         strategy=VersionStrategy.VERSION_NUMBER, 
         column="version")
-@ObjectType("ADDRESS")
-@Bookmarkable
-@PublishedObject // using the default payload factory
+@DomainObject(
+        objectType = "ADDRESS",
+        publishing = Publishing.ENABLED // using the default payload factory
+)
+@DomainObjectLayout(
+        bookmarking = BookmarkPolicy.AS_ROOT
+)
 public class ReferencedAddress implements Comparable<ReferencedAddress> {
 
     //region > line1 (property)
@@ -87,7 +96,7 @@ public class ReferencedAddress implements Comparable<ReferencedAddress> {
     //region > compareTo
 
     @Override
-    public int compareTo(ReferencedAddress other) {
+    public int compareTo(final ReferencedAddress other) {
         return ObjectContracts.compare(this, other, "name");
     }
 

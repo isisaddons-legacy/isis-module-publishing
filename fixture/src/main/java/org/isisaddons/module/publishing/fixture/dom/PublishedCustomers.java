@@ -18,11 +18,22 @@ package org.isisaddons.module.publishing.fixture.dom;
 
 import java.util.List;
 import org.apache.isis.applib.DomainObjectContainer;
-import org.apache.isis.applib.annotation.*;
-import org.apache.isis.applib.annotation.ActionSemantics.Of;
+import org.apache.isis.applib.annotation.Action;
+import org.apache.isis.applib.annotation.ActionLayout;
+import org.apache.isis.applib.annotation.BookmarkPolicy;
+import org.apache.isis.applib.annotation.DomainService;
+import org.apache.isis.applib.annotation.DomainServiceLayout;
+import org.apache.isis.applib.annotation.MemberOrder;
+import org.apache.isis.applib.annotation.ParameterLayout;
+import org.apache.isis.applib.annotation.SemanticsOf;
 
-@Named("Customers")
-@DomainService(menuOrder = "10", repositoryFor = PublishedCustomer.class)
+@DomainService(
+        repositoryFor = PublishedCustomer.class
+)
+@DomainServiceLayout(
+        named = "Customers",
+        menuOrder = "10"
+)
 public class PublishedCustomers {
 
     //region > identification in the UI
@@ -39,8 +50,12 @@ public class PublishedCustomers {
 
     //region > listAll (action)
 
-    @Bookmarkable
-    @ActionSemantics(Of.SAFE)
+    @Action(
+            semantics = SemanticsOf.SAFE
+    )
+    @ActionLayout(
+            bookmarking = BookmarkPolicy.AS_ROOT
+    )
     @MemberOrder(sequence = "1")
     public List<PublishedCustomer> listAll() {
         return container.allInstances(PublishedCustomer.class);
@@ -52,7 +67,8 @@ public class PublishedCustomers {
 
     @MemberOrder(sequence = "2")
     public PublishedCustomer create(
-            final @Named("Name") String name) {
+            @ParameterLayout(named="Name")
+            final String name) {
         final PublishedCustomer obj = container.newTransientInstance(PublishedCustomer.class);
         obj.setName(name);
         container.persistIfNotAlready(obj);
