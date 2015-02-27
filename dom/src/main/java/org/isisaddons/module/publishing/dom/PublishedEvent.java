@@ -480,7 +480,7 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     }
 
     private String targetStr;
-    @javax.jdo.annotations.Column(allowsNull="false", length=JdoColumnLength.BOOKMARK, name="target")
+    @javax.jdo.annotations.Column(allowsNull="true", length=JdoColumnLength.BOOKMARK, name="target")
     @Property(
             domainEvent = TargetStrDomainEvent.class
     )

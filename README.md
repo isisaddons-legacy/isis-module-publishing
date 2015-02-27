@@ -424,7 +424,7 @@ Finally, Dan Haywood's [camel-isis-pubsubjdo](https://github.com/danhaywood/came
 ## Change Log ##
 
 * `1.9.0-SNAPSHOT` - ...
-* `1.8.0` - Released against Isis 1.8.0.
+* `1.8.0` - Released against Isis 1.8.0.  Services are automatically registered; their UI can be suppressed using subscriptions.
 * `1.7.0` - Released against Isis 1.7.0.
 * `1.6.0` - re-released as part of isisaddons, with classes under package `org.isisaddons.module.publishing`
 
