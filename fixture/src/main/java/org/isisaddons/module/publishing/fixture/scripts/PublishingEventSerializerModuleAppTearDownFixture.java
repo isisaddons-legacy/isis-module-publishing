@@ -22,8 +22,8 @@ import org.apache.isis.objectstore.jdo.applib.service.support.IsisJdoSupport;
 public class PublishingEventSerializerModuleAppTearDownFixture extends FixtureScript {
 
     @Override
-    protected void execute(ExecutionContext executionContext) {
-        isisJdoSupport.executeUpdate("delete from \"IsisPublishedEvent\"");
+    protected void execute(final ExecutionContext executionContext) {
+        isisJdoSupport.executeUpdate("delete from IsisAddonsPublishing.\"PublishedEvent\"");
 
         isisJdoSupport.executeUpdate("delete from \"PublishedCustomer_orders\"");
         isisJdoSupport.executeUpdate("delete from \"ReferencedOrder\"");
