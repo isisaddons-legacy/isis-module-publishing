@@ -26,6 +26,7 @@ import org.apache.isis.applib.annotation.Collection;
 import org.apache.isis.applib.annotation.CollectionLayout;
 import org.apache.isis.applib.annotation.Contributed;
 import org.apache.isis.applib.annotation.DomainService;
+import org.apache.isis.applib.annotation.MemberOrder;
 import org.apache.isis.applib.annotation.NatureOfService;
 import org.apache.isis.applib.annotation.RenderType;
 import org.apache.isis.applib.annotation.SemanticsOf;
@@ -69,6 +70,7 @@ public class PublishingServiceContributions extends AbstractFactoryAndRepository
     @CollectionLayout(
             render = RenderType.EAGERLY
     )
+    @MemberOrder(sequence = "80.100")
     public List<PublishedEvent> publishedEvents(final HasTransactionId hasTransactionId) {
         return publishedEventRepository.findByTransactionId(hasTransactionId.getTransactionId());
     }

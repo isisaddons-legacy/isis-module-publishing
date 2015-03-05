@@ -36,6 +36,7 @@ import org.apache.isis.applib.annotation.PropertyLayout;
 import org.apache.isis.applib.annotation.SemanticsOf;
 import org.apache.isis.applib.annotation.Where;
 import org.apache.isis.applib.services.HasTransactionId;
+import org.apache.isis.applib.services.HasUsername;
 import org.apache.isis.applib.services.bookmark.BookmarkService;
 import org.apache.isis.applib.services.publish.EventType;
 import org.apache.isis.applib.util.ObjectContracts;
@@ -125,7 +126,7 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
 @DomainObjectLayout(
         named = "Published Event"
 )
-public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransactionId {
+public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransactionId, HasUsername {
 
     public static abstract class PropertyDomainEvent<T> extends PublishingModule.PropertyDomainEvent<PublishedEvent, T> {
         public PropertyDomainEvent(final PublishedEvent source, final Identifier identifier) {
@@ -211,7 +212,12 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     public void setUser(final String user) {
         this.user = user;
     }
-    
+
+    @Programmatic
+    public String getUsername() {
+        return getUser();
+    }
+
 
     // //////////////////////////////////////
     // timestamp (property)
