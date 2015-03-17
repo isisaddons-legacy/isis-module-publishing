@@ -47,7 +47,7 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
 
 @javax.jdo.annotations.PersistenceCapable(
         identityType=IdentityType.APPLICATION,
-        schema = "IsisAddonsPublishing",
+        schema = "isispublishing",
         table="PublishedEvent",
         objectIdClass=PublishedEventPK.class)
 @javax.jdo.annotations.Queries( {
@@ -121,7 +121,7 @@ import org.apache.isis.objectstore.jdo.applib.service.Util;
         right={"Detail","State"})
 @DomainObject(
         editing = Editing.DISABLED,
-        objectType = "IsisAddonsPublishing_PublishedEvent"
+        objectType = "isispublishing.PublishedEvent"
 )
 @DomainObjectLayout(
         named = "Published Event"
