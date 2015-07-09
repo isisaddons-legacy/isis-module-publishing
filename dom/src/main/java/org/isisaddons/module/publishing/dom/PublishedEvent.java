@@ -647,7 +647,7 @@ public class PublishedEvent extends DomainChangeJdoAbstract implements HasTransa
     private String serializedFormClob;
 
     @Programmatic // ignored by Isis
-    @javax.jdo.annotations.Column(allowsNull="true", jdbcType="CLOB")
+    @javax.jdo.annotations.Column(allowsNull="true", jdbcType="CLOB", sqlType="LONGVARCHAR")
     public String getSerializedFormClob() {
         return serializedFormClob;
     }
