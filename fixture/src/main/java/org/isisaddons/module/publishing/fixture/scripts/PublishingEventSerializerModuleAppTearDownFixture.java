@@ -23,7 +23,7 @@ public class PublishingEventSerializerModuleAppTearDownFixture extends FixtureSc
 
     @Override
     protected void execute(final ExecutionContext executionContext) {
-        isisJdoSupport.executeUpdate("delete from isispublishing.\"PublishedEvent\"");
+        isisJdoSupport.executeUpdate("delete from \"isispublishing\".\"PublishedEvent\"");
 
         isisJdoSupport.executeUpdate("delete from \"PublishedCustomer_orders\"");
         isisJdoSupport.executeUpdate("delete from \"ReferencedOrder\"");
