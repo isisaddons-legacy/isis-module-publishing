@@ -25,7 +25,7 @@
         </bs3:col>
     </bs3:row>
     <bs3:row>
-        <bs3:col span="12">
+        <bs3:col span="12" unreferencedCollections="true">
             <cpt:collection id="publishedEvents" defaultView="table"/>
         </bs3:col>
     </bs3:row>

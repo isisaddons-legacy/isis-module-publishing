@@ -29,7 +29,6 @@ import javax.jdo.annotations.Join;
 import javax.jdo.annotations.Order;
 import javax.jdo.annotations.VersionStrategy;
 
-import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.Identifier;
 import org.apache.isis.applib.annotation.Action;
 import org.apache.isis.applib.annotation.ActionLayout;
@@ -47,6 +46,7 @@ import org.apache.isis.applib.services.publish.EventPayload;
 import org.apache.isis.applib.services.publish.EventPayloadForActionInvocation;
 import org.apache.isis.applib.services.publish.EventPayloadForObjectChanged;
 import org.apache.isis.applib.services.repository.RepositoryService;
+import org.apache.isis.applib.services.wrapper.WrapperFactory;
 import org.apache.isis.applib.util.ObjectContracts;
 
 import lombok.Getter;
@@ -149,13 +149,13 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
             final String town) {
         ReferencedAddress address = getAddress();
         if(address == null) {
-            address = container.newTransientInstance(ReferencedAddress.class);
+            address = repositoryService.instantiate(ReferencedAddress.class);
         }
         address.setLine1(line1);
         address.setLine2(line2);
         address.setTown(town);
         setAddress(address);
-        container.persistIfNotAlready(address);
+        repositoryService.persist(address);
         return this;
     }
 
@@ -197,7 +197,7 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     public PublishedCustomer addOrder(
             @ParameterLayout(named="Name")
             final String name) {
-        final ReferencedOrder order = container.newTransientInstance(ReferencedOrder.class);
+        final ReferencedOrder order = repositoryService.instantiate(ReferencedOrder.class);
         order.setName(name);
         getOrders().add(order);
         repositoryService.persist(order);
@@ -219,7 +219,40 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
         return getOrders();
     }
     //endregion
-    
+
+
+    //region > placeOrderToNewAddress (action, published, has nested xactns)
+
+    @Action(
+            publishing = Publishing.ENABLED // uses wrapper factory
+    )
+    public PublishedCustomer placeOrderToNewAddress(
+            @ParameterLayout(named="Name of product to order")
+            final String name,
+            @ParameterLayout(named="New address Line 1")
+            final String line1,
+            @Parameter(optionality = Optionality.OPTIONAL)
+            @ParameterLayout(named="New address Line 2")
+            final String line2,
+            @ParameterLayout(named="New address Town")
+            final String town) {
+        wrapperFactory.wrap(this).addOrder(name);
+        wrapperFactory.wrap(this).updateAddress(line1, line2, town);
+        return this;
+    }
+
+    public String default1PlaceOrderToNewAddress() {
+        return getAddress() != null? getAddress().getLine1(): null;
+    }
+    public String default2PlaceOrderToNewAddress() {
+        return getAddress() != null? getAddress().getLine2(): null;
+    }
+    public String default3PlaceOrderToNewAddress() {
+        return getAddress() != null? getAddress().getTown(): null;
+    }
+
+    //endregion
+
     //region > compareTo
 
     @Override
@@ -232,7 +265,7 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     //region > injected services
 
     @javax.inject.Inject
-    private DomainObjectContainer container;
+    private WrapperFactory wrapperFactory;
 
     @javax.inject.Inject
     RepositoryService repositoryService;

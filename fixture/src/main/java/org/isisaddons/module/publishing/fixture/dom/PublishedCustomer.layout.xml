@@ -5,6 +5,9 @@
             <cpt:domainObject>
                 <cpt:describedAs>Published domain object with custom payload factory</cpt:describedAs>
             </cpt:domainObject>
+            <cpt:action id="placeOrderToNewAddress">
+                <cpt:describedAs>Published action that calls subactions using the WrapperFactory; should show up in the log of PublisherServiceLogging</cpt:describedAs>
+            </cpt:action>
         </bs3:col>
     </bs3:row>
     <bs3:row>
