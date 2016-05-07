@@ -26,7 +26,7 @@ import org.apache.isis.applib.fixturescripts.FixtureScript;
 import org.isisaddons.module.publishing.PublishingModule;
 import org.isisaddons.module.publishing.fixture.dom.PublishingFixtureDomModule;
 
-public final class PublishingAppManifest implements AppManifest {
+public class PublishingAppManifest implements AppManifest {
     @Override
     public List<Class<?>> getModules() {
         return Arrays.asList(

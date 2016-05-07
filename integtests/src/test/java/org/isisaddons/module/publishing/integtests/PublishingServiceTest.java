@@ -17,19 +17,23 @@
 package org.isisaddons.module.publishing.integtests;
 
 import java.util.List;
+
 import javax.inject.Inject;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import org.apache.isis.applib.services.bookmark.Bookmark;
+import org.apache.isis.applib.services.bookmark.BookmarkService;
+import org.apache.isis.applib.services.jdosupport.IsisJdoSupport;
+import org.apache.isis.applib.services.publish.EventType;
+
 import org.isisaddons.module.publishing.dom.PublishedEvent;
 import org.isisaddons.module.publishing.dom.PublishingServiceRepository;
 import org.isisaddons.module.publishing.fixture.dom.PublishedCustomer;
 import org.isisaddons.module.publishing.fixture.dom.PublishedCustomers;
 import org.isisaddons.module.publishing.fixture.scripts.PublishingEventSerializerModuleAppSetUpFixture;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.apache.isis.applib.services.bookmark.Bookmark;
-import org.apache.isis.applib.services.bookmark.BookmarkService;
-import org.apache.isis.applib.services.jdosupport.IsisJdoSupport;
-import org.apache.isis.applib.services.publish.EventType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -38,8 +42,6 @@ import static org.junit.Assert.assertThat;
 
 public class PublishingServiceTest extends PublishingEventSerializerModuleIntegTest {
 
-    PublishedCustomer publishedCustomerWO;
-    // work-around, currently unable to unwrap domain objects...
     PublishedCustomer publishedCustomer;
 
     @Before
@@ -57,8 +59,7 @@ public class PublishingServiceTest extends PublishingEventSerializerModuleIntegT
         assertThat(all.size(), is(3));
 
         publishedCustomer = all.get(0);
-        publishedCustomerWO = wrap(publishedCustomer);
-        assertThat(publishedCustomerWO.getName(), is("Mary"));
+        assertThat(wrap(publishedCustomer).getName(), is("Mary"));
     }
 
 
@@ -69,7 +70,7 @@ public class PublishingServiceTest extends PublishingEventSerializerModuleIntegT
         public void happyCase() throws Exception {
 
             // when
-            publishedCustomerWO.updateAddress("45 Main Street", "Middletown", "Trumpton");
+            wrap(publishedCustomer).updateAddress("45 Main Street", "Middletown", "Trumpton");
             nextTransaction();
 
             // then
@@ -92,7 +93,7 @@ public class PublishingServiceTest extends PublishingEventSerializerModuleIntegT
             public void happyCase() throws Exception {
 
                 // when
-                final PublishedCustomer newCustomer = publishedCustomers.create("Faz");
+                final PublishedCustomer newCustomer = wrap(publishedCustomers).create("Faz");
                 nextTransaction();
 
                 // then
@@ -113,12 +114,12 @@ public class PublishingServiceTest extends PublishingEventSerializerModuleIntegT
             public void happyCase() throws Exception {
 
                 // when
-                publishedCustomerWO.setName("Mary-Anne");
+                wrap(publishedCustomer).setName("Mary-Anne");
                 nextTransaction();
 
                 // then
                 final List<PublishedEvent> events = publishingServiceRepository.findByTargetAndFromAndTo(
-                        bookmarkFor(publishedCustomerWO), null, null);
+                        bookmarkFor(wrap(publishedCustomer)), null, null);
 
                 assertThat(events, is(not(empty())));
                 final PublishedEvent publishedEvent = events.get(0);

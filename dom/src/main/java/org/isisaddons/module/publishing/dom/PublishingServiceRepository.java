@@ -19,14 +19,19 @@ package org.isisaddons.module.publishing.dom;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+
+import javax.inject.Inject;
+
 import org.joda.time.LocalDate;
-import org.apache.isis.applib.AbstractFactoryAndRepository;
+
 import org.apache.isis.applib.annotation.DomainService;
 import org.apache.isis.applib.annotation.NatureOfService;
 import org.apache.isis.applib.annotation.Programmatic;
 import org.apache.isis.applib.query.Query;
 import org.apache.isis.applib.query.QueryDefault;
 import org.apache.isis.applib.services.bookmark.Bookmark;
+import org.apache.isis.applib.services.bookmark.BookmarkService;
+import org.apache.isis.applib.services.repository.RepositoryService;
 
 /**
  * Provides supporting functionality for querying and persisting
@@ -40,31 +45,46 @@ import org.apache.isis.applib.services.bookmark.Bookmark;
 @DomainService(
         nature = NatureOfService.DOMAIN
 )
-public class PublishingServiceRepository extends AbstractFactoryAndRepository {
+public class PublishingServiceRepository {
+
+
+    //region > findQueued
 
     @Programmatic
     public List<PublishedEvent> findQueued() {
-        return allMatches(
+        return repositoryService.allMatches(
                 new QueryDefault<>(PublishedEvent.class,
                         "findByStateOrderByTimestamp", 
                         "state", PublishedEvent.State.QUEUED));
     }
 
+    //endregion
+
+    //region > findProcessed
+
     @Programmatic
     public List<PublishedEvent> findProcessed() {
-        return allMatches(
+        return repositoryService.allMatches(
                 new QueryDefault<>(PublishedEvent.class,
                         "findByStateOrderByTimestamp", 
                         "state", PublishedEvent.State.PROCESSED));
     }
 
+    //endregion
+
+    //region > findByTransactionId
+
     @Programmatic
     public List<PublishedEvent> findByTransactionId(final UUID transactionId) {
-        return allMatches(
+        return repositoryService.allMatches(
                 new QueryDefault<>(PublishedEvent.class,
                         "findByTransactionId", 
                         "transactionId", transactionId));
     }
+
+    //endregion
+
+    //region > purgeProcessed
 
     @Programmatic
     public void purgeProcessed() {
@@ -74,6 +94,20 @@ public class PublishingServiceRepository extends AbstractFactoryAndRepository {
         for (PublishedEvent publishedEvent : processedEvents) {
             publishedEvent.delete();
         }
+    }
+
+    //endregion
+
+    //region > findByTargetAndFromAndTo
+
+    @Programmatic
+    public List<PublishedEvent> findByTargetAndFromAndTo(
+            final Object publishedObject,
+            final LocalDate from,
+            final LocalDate to) {
+
+        final Bookmark bookmark = bookmarkService.bookmarkFor(publishedObject);
+        return findByTargetAndFromAndTo(bookmark, from, to);
     }
 
 
@@ -89,31 +123,35 @@ public class PublishingServiceRepository extends AbstractFactoryAndRepository {
         final Query<PublishedEvent> query;
         if(from != null) {
             if(to != null) {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
-                        "findByTargetAndTimestampBetween", 
+                query = new QueryDefault<>(PublishedEvent.class,
+                        "findByTargetAndTimestampBetween",
                         "targetStr", targetStr,
                         "from", fromTs,
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
-                        "findByTargetAndTimestampAfter", 
+                query = new QueryDefault<>(PublishedEvent.class,
+                        "findByTargetAndTimestampAfter",
                         "targetStr", targetStr,
                         "from", fromTs);
             }
         } else {
             if(to != null) {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
-                        "findByTargetAndTimestampBefore", 
+                query = new QueryDefault<>(PublishedEvent.class,
+                        "findByTargetAndTimestampBefore",
                         "targetStr", targetStr,
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
-                        "findByTarget", 
+                query = new QueryDefault<>(PublishedEvent.class,
+                        "findByTarget",
                         "targetStr", targetStr);
             }
         }
-        return allMatches(query);
+        return repositoryService.allMatches(query);
     }
+
+    //endregion
+
+    //region > findByFromAndTo
 
     @Programmatic
     public List<PublishedEvent> findByFromAndTo(
@@ -125,32 +163,54 @@ public class PublishingServiceRepository extends AbstractFactoryAndRepository {
         final Query<PublishedEvent> query;
         if(from != null) {
             if(to != null) {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
-                        "findByTimestampBetween", 
+                query = new QueryDefault<>(PublishedEvent.class,
+                        "findByTimestampBetween",
                         "from", fromTs,
                         "to", toTs);
             } else {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
-                        "findByTimestampAfter", 
+                query = new QueryDefault<>(PublishedEvent.class,
+                        "findByTimestampAfter",
                         "from", fromTs);
             }
         } else {
             if(to != null) {
-                query = new QueryDefault<PublishedEvent>(PublishedEvent.class,
-                        "findByTimestampBefore", 
+                query = new QueryDefault<>(PublishedEvent.class,
+                        "findByTimestampBefore",
                         "to", toTs);
             } else {
                 query = new QueryDefault<>(PublishedEvent.class,
                         "find");
             }
         }
-        return allMatches(query);
+        return repositoryService.allMatches(query);
     }
-    
+
+    //endregion
+
+    //region > findRecentByUser
+
+    @Programmatic
+    public List<PublishedEvent> findRecentByUser(final String user) {
+        return repositoryService.allMatches(
+                new QueryDefault<>(PublishedEvent.class, "findRecentByUser", "user", user));
+
+    }
+    //endregion
+
+    //region > helpers
+
+
     private static Timestamp toTimestampStartOfDayWithOffset(final LocalDate dt, int daysOffset) {
         return dt!=null
                 ?new java.sql.Timestamp(dt.toDateTimeAtStartOfDay().plusDays(daysOffset).getMillis())
                 :null;
     }
+
+    //endregion
+
+    @Inject
+    RepositoryService repositoryService;
+    @Inject
+    BookmarkService bookmarkService;
 
 }

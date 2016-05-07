@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import javax.inject.Named;
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
@@ -27,11 +28,12 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.Join;
 import javax.jdo.annotations.Order;
 import javax.jdo.annotations.VersionStrategy;
+
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.Identifier;
 import org.apache.isis.applib.annotation.Action;
+import org.apache.isis.applib.annotation.ActionLayout;
 import org.apache.isis.applib.annotation.DomainObject;
-import org.apache.isis.applib.annotation.MemberOrder;
 import org.apache.isis.applib.annotation.Optionality;
 import org.apache.isis.applib.annotation.Parameter;
 import org.apache.isis.applib.annotation.ParameterLayout;
@@ -44,7 +46,11 @@ import org.apache.isis.applib.annotation.Title;
 import org.apache.isis.applib.services.publish.EventPayload;
 import org.apache.isis.applib.services.publish.EventPayloadForActionInvocation;
 import org.apache.isis.applib.services.publish.EventPayloadForObjectChanged;
+import org.apache.isis.applib.services.repository.RepositoryService;
 import org.apache.isis.applib.util.ObjectContracts;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @javax.jdo.annotations.PersistenceCapable(identityType=IdentityType.DATASTORE)
 @javax.jdo.annotations.DatastoreIdentity(
@@ -60,6 +66,7 @@ import org.apache.isis.applib.util.ObjectContracts;
 )
 public class PublishedCustomer implements Comparable<PublishedCustomer> {
 
+    //region > ObjectChangedEventPayloadFactory (class defn)
     public static class ObjectChangedEventPayloadFactory implements PublishingPayloadFactoryForObject {
         @Override
         public EventPayload payloadFor(final Object changedObject, final PublishingChangeKind publishingChangeKind) {
@@ -87,6 +94,25 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
             }
         }
     }
+    //endregion
+
+
+    @javax.jdo.annotations.Column(allowsNull="false")
+    @Title(sequence="1")
+    @Getter @Setter
+    private String name;
+
+    @Column(allowsNull = "true")
+    @Getter @Setter
+    private ReferencedAddress address;
+
+    @Join
+    @Element(dependent = "false")
+    @Getter @Setter
+    private SortedSet<ReferencedOrder> orders = new TreeSet<>();
+
+
+    //region > updateAddress (published action with custom payload factory)
 
     public static class UpdateAddressEventPayloadFactory implements PublishingPayloadFactoryForAction {
 
@@ -108,37 +134,6 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
         }
     }
 
-    //region > name (property)
-
-    private String name;
-
-    @javax.jdo.annotations.Column(allowsNull="false")
-    @Title(sequence="1")
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    //endregion
-
-    //region > address (property)
-    private ReferencedAddress address;
-
-    @Column(allowsNull = "true")
-    public ReferencedAddress getAddress() {
-        return address;
-    }
-
-    public void setAddress(final ReferencedAddress address) {
-        this.address = address;
-    }
-
-    //endregion
-
-    //region > updateAddress (published action), clearAddress (action)
     @Action(
             semantics = SemanticsOf.IDEMPOTENT,
             publishing = Publishing.ENABLED,
@@ -173,10 +168,15 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     public String default2UpdateAddress() {
         return getAddress() != null? getAddress().getTown(): null;
     }
+    //endregion
 
-    @Named("Clear")
+    //region > clearAddress (action, not published)
+
     @Action(
             semantics = SemanticsOf.IDEMPOTENT
+    )
+    @ActionLayout(
+            named = "Clear"
     )
     public PublishedCustomer resetAddress(
             final @Named("Are you sure?") boolean areYouSure) {
@@ -190,22 +190,7 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
 
     //endregion
 
-    //region > orders (collection)
-    @Join
-    @Element(dependent = "false")
-    private SortedSet<ReferencedOrder> orders = new TreeSet<>();
-
-    @MemberOrder(sequence = "1")
-    public SortedSet<ReferencedOrder> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(final SortedSet<ReferencedOrder> orders) {
-        this.orders = orders;
-    }
-    //endregion
-
-    //region > addOrder (action)
+    //region > addOrder (published action, using default payload factory)
     @Action(
             publishing = Publishing.ENABLED // using the default payload factory
     )
@@ -215,18 +200,18 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
         final ReferencedOrder order = container.newTransientInstance(ReferencedOrder.class);
         order.setName(name);
         getOrders().add(order);
-        container.persistIfNotAlready(order);
+        repositoryService.persist(order);
         return this;
     }
     //endregion
 
-    //region > removeOrder (action)
+    //region > removeOrder (action, not published)
     @Action(
             semantics = SemanticsOf.IDEMPOTENT
     )
     public PublishedCustomer removeOrder(final Order order) {
         getOrders().remove(order);
-        container.removeIfNotAlready(order);
+        repositoryService.remove(order);
         return this;
     }
 
@@ -247,8 +232,10 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
     //region > injected services
 
     @javax.inject.Inject
-    @SuppressWarnings("unused")
     private DomainObjectContainer container;
+
+    @javax.inject.Inject
+    RepositoryService repositoryService;
 
     //endregion
 

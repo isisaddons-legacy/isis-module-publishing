@@ -18,10 +18,10 @@ package org.isisaddons.module.publishing.dom;
 
 import java.util.List;
 import java.util.UUID;
-import org.isisaddons.module.publishing.PublishingModule;
+
 import org.joda.time.LocalDate;
+
 import org.apache.isis.applib.AbstractService;
-import org.apache.isis.applib.Identifier;
 import org.apache.isis.applib.annotation.Action;
 import org.apache.isis.applib.annotation.ActionLayout;
 import org.apache.isis.applib.annotation.DomainService;
@@ -35,6 +35,8 @@ import org.apache.isis.applib.annotation.RestrictTo;
 import org.apache.isis.applib.annotation.SemanticsOf;
 import org.apache.isis.applib.services.clock.ClockService;
 
+import org.isisaddons.module.publishing.PublishingModule;
+
 @DomainService(
         nature = NatureOfService.VIEW_MENU_ONLY
 )
@@ -45,20 +47,13 @@ import org.apache.isis.applib.services.clock.ClockService;
 )
 public class PublishingServiceMenu extends AbstractService {
 
-    public static abstract class ActionDomainEvent extends PublishingModule.ActionDomainEvent<PublishingServiceMenu> {
-
-        public ActionDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... arguments) {
-            super(source, identifier, arguments);
-        }
+    public static abstract class ActionDomainEvent
+            extends PublishingModule.ActionDomainEvent<PublishingServiceMenu> {
     }
 
 
-    // //////////////////////////////////////
 
     public static class QueuedPublishedEventsDomainEvent extends ActionDomainEvent {
-        public QueuedPublishedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
-            super(source, identifier, args);
-        }
     }
 
     @Action(
@@ -72,16 +67,11 @@ public class PublishingServiceMenu extends AbstractService {
     public List<PublishedEvent> queuedPublishedEvents() {
         return publishingServiceRepository.findQueued();
     }
-    public boolean hideQueuedPublishedEvents() {
-        return publishingServiceRepository == null;
-    }
 
-    // //////////////////////////////////////
+
+
 
     public static class FindPublishedEventsByTransactionIdDomainEvent extends ActionDomainEvent {
-        public FindPublishedEventsByTransactionIdDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
-            super(source, identifier, args);
-        }
     }
 
     @Action(
@@ -97,12 +87,8 @@ public class PublishingServiceMenu extends AbstractService {
     }
 
 
-    // //////////////////////////////////////
 
     public static class FindPublishedEventsDomainEvent extends ActionDomainEvent {
-        public FindPublishedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
-            super(source, identifier, args);
-        }
     }
 
     @Action(
@@ -122,9 +108,7 @@ public class PublishingServiceMenu extends AbstractService {
             final LocalDate to) {
         return publishingServiceRepository.findByFromAndTo(from, to);
     }
-    public boolean hideFindPublishedEvents() {
-        return publishingServiceRepository == null;
-    }
+
     public LocalDate default0FindPublishedEvents() {
         return clockService.now().minusDays(7);
     }
@@ -132,13 +116,11 @@ public class PublishingServiceMenu extends AbstractService {
         return clockService.now();
     }
 
-    // //////////////////////////////////////
+
+
 
 
     public static class PurgeProcessedEventsDomainEvent extends ActionDomainEvent {
-        public PurgeProcessedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
-            super(source, identifier, args);
-        }
     }
 
     @Action(
@@ -152,16 +134,11 @@ public class PublishingServiceMenu extends AbstractService {
     public void purgeProcessedEvents() {
         publishingServiceRepository.purgeProcessed();
     }
-    public boolean hidePurgeProcessedEvents() {
-        return publishingServiceRepository == null;
-    }
 
-    // //////////////////////////////////////
+
+
 
     public static class AllProcessedEventsDomainEvent extends ActionDomainEvent {
-        public AllProcessedEventsDomainEvent(final PublishingServiceMenu source, final Identifier identifier, final Object... args) {
-            super(source, identifier, args);
-        }
     }
 
     @Action(
@@ -176,12 +153,12 @@ public class PublishingServiceMenu extends AbstractService {
     public List<PublishedEvent> allProcessedEvents() {
         return publishingServiceRepository.findProcessed();
     }
-    public boolean hideAllProcessedEvents() {
-        return publishingServiceRepository == null;
-    }
 
 
-    // //////////////////////////////////////
+
+
+
+
 
     @javax.inject.Inject
     private PublishingServiceRepository publishingServiceRepository;
