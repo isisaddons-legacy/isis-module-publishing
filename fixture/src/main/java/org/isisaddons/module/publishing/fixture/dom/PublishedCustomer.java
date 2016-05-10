@@ -36,6 +36,7 @@ import org.apache.isis.applib.annotation.DomainObject;
 import org.apache.isis.applib.annotation.Optionality;
 import org.apache.isis.applib.annotation.Parameter;
 import org.apache.isis.applib.annotation.ParameterLayout;
+import org.apache.isis.applib.annotation.Property;
 import org.apache.isis.applib.annotation.Publishing;
 import org.apache.isis.applib.annotation.PublishingChangeKind;
 import org.apache.isis.applib.annotation.PublishingPayloadFactoryForAction;
@@ -99,6 +100,9 @@ public class PublishedCustomer implements Comparable<PublishedCustomer> {
 
     @javax.jdo.annotations.Column(allowsNull="false")
     @Title(sequence="1")
+    @Property(
+            publishing = Publishing.ENABLED
+    )
     @Getter @Setter
     private String name;
 
