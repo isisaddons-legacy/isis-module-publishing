@@ -98,7 +98,7 @@ public class RestfulObjectsSpecEventSerializer implements EventSerializer {
 
     JsonRepresentation asPayloadRepr(final RendererContext rendererContext, EventPayload payload) {
         final DomainObjectReprRenderer renderer = new DomainObjectReprRenderer(rendererContext, null, JsonRepresentation.newMap());
-        final ObjectAdapter objectAdapter = rendererContext.getPersistenceSession().getAdapterManager().adapterFor(payload);
+        final ObjectAdapter objectAdapter = rendererContext.getPersistenceSession().adapterFor(payload);
         renderer.with(objectAdapter).asEventSerialization();
         return renderer.render();
     }

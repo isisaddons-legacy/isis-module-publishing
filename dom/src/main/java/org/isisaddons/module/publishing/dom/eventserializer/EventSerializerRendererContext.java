@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import com.google.common.collect.Sets;
 import org.apache.isis.applib.annotation.Where;
-import org.apache.isis.applib.profiles.Localization;
 import org.apache.isis.core.commons.authentication.AuthenticationSession;
 import org.apache.isis.core.commons.config.IsisConfiguration;
 import org.apache.isis.core.metamodel.adapter.ObjectAdapter;
@@ -48,22 +47,22 @@ class EventSerializerRendererContext implements RendererContext {
 
     @Override
     public AuthenticationSession getAuthenticationSession() {
-        return IsisContext.getAuthenticationSession();
+        return IsisContext.getSessionFactory().getCurrentSession().getAuthenticationSession();
     }
 
     @Override
     public PersistenceSession getPersistenceSession() {
-        return IsisContext.getPersistenceSession();
+        return IsisContext.getSessionFactory().getCurrentSession().getPersistenceSession();
     }
 
     @Override
     public IsisConfiguration getConfiguration() {
-        return IsisContext.getConfiguration();
+        return IsisContext.getSessionFactory().getConfiguration();
     }
 
     @Override
     public AdapterManager getAdapterManager() {
-        return getPersistenceSession().getAdapterManager();
+        return getPersistenceSession();
     }
 
     @Override
@@ -74,11 +73,6 @@ class EventSerializerRendererContext implements RendererContext {
     @Override
     public Where getWhere() {
         return where;
-    }
-
-    @Override
-    public Localization getLocalization() {
-        return IsisContext.getLocalization();
     }
 
     @Override
@@ -127,7 +121,5 @@ class EventSerializerRendererContext implements RendererContext {
         final Oid oid = objectAdapter.getOid();
         return rendered.add(oid);
     }
-
-    
 
 }
