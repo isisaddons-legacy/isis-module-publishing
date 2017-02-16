@@ -18,6 +18,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.incode</groupId>
+        <artifactId>incode-parent</artifactId>
+        <version>1.13.2.20170214-2237</version>
+        <relativePath/>
+    </parent>
+
     <groupId>org.isisaddons.module.publishing</groupId>
     <artifactId>isis-module-publishing</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -31,29 +38,14 @@
     </prerequisites>
 
     <properties>
-        <isis.version>1.13.0</isis.version>
-
         <isis-module-publishing.version>1.14.0-SNAPSHOT</isis-module-publishing.version>
 
+        <assertj-core.version>2.4.0</assertj-core.version>
+        <lombok.version>1.16.6</lombok.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <assertj-core.version>2.4.0</assertj-core.version>
-        <lombok.version>1.16.6</lombok.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>snapshots-repo</id>
-            <url>http://repository-estatio.forge.cloudbees.com/snapshot/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <build>
         <pluginManagement>
